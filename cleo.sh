@@ -7,4 +7,4 @@
 HOST=`hostname`
 
 # executa a aplicação (-OO)
-/usr/bin/env python3 cleo.py >> cleo.$HOST.log 2>&1
+streamlit run cleo.py >> cleo.$HOST.log 2>&1
