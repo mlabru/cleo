@@ -26,7 +26,4 @@ DS_MSGQ_SRV = "172.18.30.30"
 DS_USER = "clsim"
 DS_PASS = "segredo"
 
-# intervalo máximo de previsão em horas
-DI_DELTA = 48
-
 # < the end >--------------------------------------------------------------------------------------

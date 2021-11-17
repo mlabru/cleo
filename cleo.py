@@ -25,8 +25,6 @@ import cls_defs as df
 M_LOG = logging.getLogger(__name__)
 M_LOG.setLevel(logging.DEBUG)
 
-# < defines >--------------------------------------------------------------------------------------
-
 # -------------------------------------------------------------------------------------------------
 def pag_openwrf():
     """
@@ -48,54 +46,29 @@ def pag_openwrf():
     with lwd_col1:
         # data início
         ldt_ini = st.date_input("Data Inicial (AAAA/MM/DD):")
-        # hora início
-        ltm_ini = st.time_input("Hora Inicial (HH/MM):")
-        # data & hora
-        ldt_ini = datetime.datetime(ldt_ini.year, ldt_ini.month, ldt_ini.day, ltm_ini.hour, ltm_ini.minute, 0)
+        # intervalo de simulação
+        li_dlt = st.selectbox("Intervalo de Simulação:", [24, 48, 72])
 
     # na coluna 2
     with lwd_col2:
-        # data final
-        ldt_fin = st.date_input("Data Final (AAAA/MM/DD):")
-        # hora final
-        ltm_fin = st.time_input("Hora Final (HH/MM):")
-        # data & hora
-        ldt_fin = datetime.datetime(ldt_fin.year, ldt_fin.month, ldt_fin.day, ltm_fin.hour, ltm_fin.minute, 0)
-
-    # calculate delta time
-    ldt_dlt = ldt_fin - ldt_ini
-    # em segundos
-    lf_dlt_in_s = ldt_dlt.total_seconds() 
-    # em horas
-    lf_dlt_in_h = divmod(lf_dlt_in_s, 3600)[0]
+        # hora início
+        li_hora_ini = st.selectbox("Hora Inicial:", [0, 6, 12, 18])
 
     # e-mail
     ls_email = st.text_input("E-mail para onde serão enviados os arquivos de saída:")
 
     # gera parâmetros
-    ls_parm = "{} {} {} {} {} {} {} {} {} {} {} {}".format(
+    ls_parm = "{} {} {} {} {} {} {}".format(
                   df.DLST_REGIAO_SIGLA[df.DLST_REGIAO_NOME.index(ls_reg)],
-                  ldt_ini.year, ldt_ini.month, ldt_ini.day, ldt_ini.hour, ldt_ini.minute,
-                  ldt_fin.year, ldt_fin.month, ldt_fin.day, ldt_fin.hour, ldt_fin.minute,
-                  ls_email)
-
-    # senão, data ok ?
-    if ldt_ini >= ldt_fin:
-        # error
-        st.error("Data final deve ser posterior a inicial.")
-
-    # senão, delta ok ?
-    elif lf_dlt_in_h > df.DI_DELTA:    
-        # error
-        st.error("Intervalo de previsão maior que {} horas.".format(df.DI_DELTA))
+                  ldt_ini.year, ldt_ini.month, ldt_ini.day, li_hora_ini, li_dlt, ls_email)
 
     # e-mail ok ?
-    elif not ls_email:
+    if not ls_email:
         # error
         st.error("E-mail vazio ou inválido.")
 
     # ok ?
-    lv_ok = ls_email and (ldt_fin > ldt_ini) and (lf_dlt_in_h <= df.DI_DELTA)
+    lv_ok = ls_email
 
     # submit button
     lv_submit = st.button("Gerar previsão", on_click=send_msg, args=(ls_parm,)) if lv_ok else False

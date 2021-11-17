@@ -5,33 +5,29 @@
 
 # nome do computador
 HOST=`hostname`
-echo ${HOST}
 
 # get today's date
 TDATE=`date '+%Y-%m-%d_%H-%M-%S'`
-echo "TDATE" ${TDATE}
-
-echo "args: " $@
 
 # get all command line arguments
 CMDLIN=( $@ )
-echo "CMDLIN" ${CMDLIN[@]}
+# echo "CMDLIN" ${CMDLIN[@]}
 
 # length of an array
 CLLEN=${#CMDLIN[@]}
-echo "CLLEN" ${CLLEN}
+# echo "CLLEN" ${CLLEN}
 
 # email
 EMAIL=${CMDLIN[$CLLEN-1]}
-echo "EMAIL" ${EMAIL}
+# echo "EMAIL" ${EMAIL}
 
 # parameters (região, data ini, data fim)
 PARMS=${CMDLIN[@]:0:$CLLEN-1}
-echo "PARMS" ${PARMS}
+# echo "PARMS" ${PARMS}
 
 # token (parameters sem espaços)
 TOKEN="$(echo -e "${PARMS}" | tr -d '[:space:]')"
-echo "TOKEN" ${TOKEN}
+# echo "TOKEN" ${TOKEN}
 
 # home dir do WRF
 cd /home/webpca/WRF
