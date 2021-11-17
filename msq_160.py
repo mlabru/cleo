@@ -17,7 +17,7 @@ import sys
 import pika
 
 # local
-import cls_def as df
+import cls_defs as df
 
 # < logging >--------------------------------------------------------------------------------------
 
@@ -58,25 +58,33 @@ def main():
     """
     drive app
     """
-    # connect RabbitMQ server    
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host="localhost"))
-    assert connection
+    # create credentials
+    l_cred = pika.PlainCredentials(df.DS_USER, df.DS_PASS)
+    assert l_cred
+
+    # create parameters
+    l_parm = pika.ConnectionParameters(host=df.DS_MSGQ_SRV, credentials=l_cred)
+    assert l_parm
+    
+    # create connection
+    l_conn = pika.BlockingConnection(l_parm)
+    assert l_conn
 
     # create channel
-    channel = connection.channel()
-    assert channel
+    l_chnl = l_conn.channel()
+    assert l_chnl
 
     # create execWRF queue
-    channel.queue_declare(queue="execWRF")
+    l_chnl.queue_declare(queue="execWRF")
 
     # create consume
-    channel.basic_consume(queue="execWRF", on_message_callback=callback)  # , auto_ack=True)
+    l_chnl.basic_consume(queue="execWRF", on_message_callback=callback)  # , auto_ack=True)
 
     # logger
     M_LOG.info(" [*] Waiting for messages. To exit press CTRL+C")
 
     # start consuming
-    channel.start_consuming()
+    l_chnl.start_consuming()
 
 # -------------------------------------------------------------------------------------------------
 # this is the bootstrap process

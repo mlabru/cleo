@@ -13,4 +13,4 @@ TDATE=`date '+%Y-%m-%d_%H-%M-%S'`
 cd /home/webpca/clsim/cleo
 
 # executa a aplicação (-OO)
-streamlit run cleo.py > logs/cleo.$HOST.$TDATE.log 2>&1 &
+python3 msq_160.py > logs/msq_160.$HOST.$TDATE.log 2>&1 &

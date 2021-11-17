@@ -17,7 +17,7 @@ import pika
 import streamlit as st
 
 # local
-import cls_def as df
+import cls_defs as df
 
 # < logging >--------------------------------------------------------------------------------------
 
@@ -82,20 +82,20 @@ def pag_openwrf():
     # senão, data ok ?
     if ldt_ini >= ldt_fin:
         # error
-        st.error("data final deve ser posterior a inicial.")
+        st.error("Data final deve ser posterior a inicial.")
 
     # senão, delta ok ?
-    elif lf_dlt_in_h > 72:    
+    elif lf_dlt_in_h > df.DI_DELTA:    
         # error
-        st.error("intervalo de previsão maior que 72 horas.")
+        st.error("Intervalo de previsão maior que {} horas.".format(df.DI_DELTA))
 
     # e-mail ok ?
     elif not ls_email:
         # error
-        st.error("e-mail vazio ou inválido.")
+        st.error("E-mail vazio ou inválido.")
 
     # ok ?
-    lv_ok = ls_email and (ldt_fin > ldt_ini) and (lf_dlt_in_h <= 72)
+    lv_ok = ls_email and (ldt_fin > ldt_ini) and (lf_dlt_in_h <= df.DI_DELTA)
 
     # submit button
     lv_submit = st.button("Gerar previsão", on_click=send_msg, args=(ls_parm,)) if lv_ok else False
@@ -149,8 +149,16 @@ def send_msg(fs_parm):
     """
     send message to queue 'execWRF'
     """
+    # create credentials
+    l_cred = pika.PlainCredentials(df.DS_USER, df.DS_PASS)
+    assert l_cred
+
+    # create parameters
+    l_parm = pika.ConnectionParameters(host=df.DS_MSGQ_SRV, credentials=l_cred)
+    assert l_parm
+    
     # create connection
-    l_conn = pika.BlockingConnection(pika.ConnectionParameters(host="localhost"))
+    l_conn = pika.BlockingConnection(l_parm)
     assert l_conn
 
     # create channel
@@ -175,7 +183,7 @@ def main():
     drive app
     """
     # app title
-    st.sidebar.title("Centro Logístico de Simulação")
+    st.sidebar.title("Centro Logístico de Simulação Meteorológica")
     # app selection
     ls_pg_sel = st.sidebar.selectbox("Selecione o aplicativo", ["openWRF", "Frontline"])
 
