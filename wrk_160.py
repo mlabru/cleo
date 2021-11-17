@@ -10,6 +10,7 @@ msq_160
 # python library
 import logging
 import os
+import pathlib
 import subprocess
 import sys
 
@@ -27,31 +28,31 @@ M_LOG.setLevel(logging.DEBUG)
 
 # < defines >--------------------------------------------------------------------------------------
 
+# source path
+DS_SRC_PATH = pathlib.Path(__file__).resolve().parent
+
 # execWRF batch
-DS_BASH_WRF = "/home/webpca/execWRF.sh"
+DS_BASH_WRF = pathlib.PurePath(DS_SRC_PATH, "execWRF.sh")
 
 # -------------------------------------------------------------------------------------------------
-def callback(ch, method, properties, body):
+def callback(f_ch, f_method, f_properties, f_body):
     """
     process messages callback
+
+    :param f_ch: document_me
+    :param f_method: document_me
+    :param f_properties: document_me
+    :param f_body: document_me
     """
     # logger
-    M_LOG.info(" [x] Received %r" % body.decode())
-
-    # trata parâmetros
-    #ls_param = "{} {} {} {} {} {} {} {} {} {} {}".format(
-    #               df.DLST_REGIAO_SIGLA[df.DLST_REGIAO_NOME.index(ls_reg)],
-    #               ldt_ini.year, ldt_ini.month, ldt_ini.day, ltm_ini.hour, ltm_ini.minute,
-    #               ldt_fin.year, ldt_fin.month, ldt_fin.day, ltm_fin.hour, ltm_fin.minute)
-    #M_LOG.debug("ls_param: %s", ls_param)
-    print(body)
+    M_LOG.info(" [x] Received %r" % f_body.decode())
 
     # exec WRF
-    ls_log = subprocess.run(["bash", DS_BASH_WRF, body.decode()], capture_output=True)
+    ls_log = subprocess.run(["bash", DS_BASH_WRF, f_body.decode()], capture_output=True)
     M_LOG.debug("ls_log: %s", ls_log)
 
     # message acknowledgment
-    ch.basic_ack(delivery_tag=method.delivery_tag)
+    f_ch.basic_ack(delivery_tag=f_method.delivery_tag)
         
 # -------------------------------------------------------------------------------------------------
 def main():
@@ -75,7 +76,10 @@ def main():
     assert l_chnl
 
     # create execWRF queue
-    l_chnl.queue_declare(queue="execWRF")
+    l_chnl.queue_declare(queue="execWRF", durable=True)
+
+    # dispatch to the next worker that is not still busy
+    l_chnl.basic_qos(prefetch_count=1)
 
     # create consume
     l_chnl.basic_consume(queue="execWRF", on_message_callback=callback)  # , auto_ack=True)

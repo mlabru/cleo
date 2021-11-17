@@ -139,10 +139,15 @@ def send_msg(fs_parm):
     assert l_chnl
 
     # create queue
-    l_chnl.queue_declare(queue="execWRF")
+    l_chnl.queue_declare(queue="execWRF", durable=True)
 
     # exec WRF
-    l_chnl.basic_publish(exchange="", routing_key="execWRF", body=fs_parm)
+    l_chnl.basic_publish(exchange="",
+                         routing_key="execWRF", 
+                         body=fs_parm,
+                         properties=pika.BasicProperties(
+                             delivery_mode=2,  # make message persistent
+                        ))
 
     # logger
     M_LOG.info(" [x] Sent '{}'".format(fs_parm))
