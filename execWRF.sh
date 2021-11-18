@@ -11,23 +11,18 @@ TDATE=`date '+%Y-%m-%d_%H-%M-%S'`
 
 # get all command line arguments
 CMDLIN=( $@ )
-# echo "CMDLIN" ${CMDLIN[@]}
 
-# length of an array
+# length of array
 CLLEN=${#CMDLIN[@]}
-# echo "CLLEN" ${CLLEN}
 
 # email
 EMAIL=${CMDLIN[$CLLEN-1]}
-# echo "EMAIL" ${EMAIL}
 
 # parameters (região, data ini, data fim)
 PARMS=${CMDLIN[@]:0:$CLLEN-1}
-# echo "PARMS" ${PARMS}
 
 # token (parameters sem espaços)
 TOKEN="$(echo -e "${PARMS}" | tr -d '[:space:]')"
-# echo "TOKEN" ${TOKEN}
 
 # home dir do WRF
 cd /home/webpca/WRF

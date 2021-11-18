@@ -12,15 +12,16 @@ import logging
 # < defines >--------------------------------------------------------------------------------------
 
 # logging level
-DI_LOG_LEVEL = logging.WARNING
-# DI_LOG_LEVEL = logging.DEBUG
+DI_LOG_LEVEL = logging.DEBUG
+# DI_LOG_LEVEL = logging.WARNING
 
 # lista de regiões
 DLST_REGIAO_NOME = ["Norte", "Sudeste"]
 DLST_REGIAO_SIGLA = ["N", "SE"]
 
 # RabbitMQ server
-DS_MSGQ_SRV = "172.18.30.30"
+DS_MSGQ_SRV = "localhost"
+# DS_MSGQ_SRV = "172.18.30.30"
 
 # message queue user/passwd
 DS_USER = "clsim"

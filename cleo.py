@@ -47,20 +47,21 @@ def pag_openwrf():
         # data início
         ldt_ini = st.date_input("Data Inicial (AAAA/MM/DD):")
         # intervalo de simulação
-        li_dlt = st.selectbox("Intervalo de Simulação:", [24, 48, 72])
+        li_dlt = st.selectbox("Intervalo de Simulação (horas):", [24, 48, 72])
 
     # na coluna 2
     with lwd_col2:
         # hora início
-        li_hora_ini = st.selectbox("Hora Inicial:", [0, 6, 12, 18])
+        li_hora_ini = int(st.selectbox("Hora Inicial:", ["00", "06", "12", "18"]))
 
     # e-mail
     ls_email = st.text_input("E-mail para onde serão enviados os arquivos de saída:")
 
     # gera parâmetros
     ls_parm = "{} {} {} {} {} {} {}".format(
+                  ldt_ini.year, ldt_ini.month, ldt_ini.day, li_hora_ini, li_dlt, 
                   df.DLST_REGIAO_SIGLA[df.DLST_REGIAO_NOME.index(ls_reg)],
-                  ldt_ini.year, ldt_ini.month, ldt_ini.day, li_hora_ini, li_dlt, ls_email)
+                  ls_email)
 
     # e-mail ok ?
     if not ls_email:

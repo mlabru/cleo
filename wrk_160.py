@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-msq_160
+wrk_160
 160 work queue consumer
 
 2021/nov  1.0  mlabru   initial version (Linux/Python)
