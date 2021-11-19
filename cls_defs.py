@@ -20,11 +20,15 @@ DLST_REGIAO_NOME = ["Norte", "Sudeste"]
 DLST_REGIAO_SIGLA = ["N", "SE"]
 
 # RabbitMQ server
-DS_MSGQ_SRV = "localhost"
-# DS_MSGQ_SRV = "172.18.30.30"
+DS_MSQ_SRV = "localhost"
+# DS_MSQ_SRV = "172.18.30.30"
 
-# message queue user/passwd
-DS_USER = "clsim"
-DS_PASS = "segredo"
+# -------------------------------------------------------------------------------------------------
+import imp
+
+# open secrets files
+with open(".hidden/cls_secrets.py", "rb") as lfh:
+    # import module
+    hs = imp.load_module(".hidden", lfh, ".hidden/cls_secrets", (".py", "rb", imp.PY_SOURCE))
 
 # < the end >--------------------------------------------------------------------------------------

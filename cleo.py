@@ -124,11 +124,11 @@ def send_msg(fs_parm):
     send message to queue 'execWRF'
     """
     # create credentials
-    l_cred = pika.PlainCredentials(df.DS_USER, df.DS_PASS)
+    l_cred = pika.PlainCredentials(df.hs.DS_MSQ_USR, df.hs.DS_MSQ_PWD)
     assert l_cred
 
     # create parameters
-    l_parm = pika.ConnectionParameters(host=df.DS_MSGQ_SRV, credentials=l_cred)
+    l_parm = pika.ConnectionParameters(host=df.DS_MSQ_SRV, credentials=l_cred)
     assert l_parm
     
     # create connection

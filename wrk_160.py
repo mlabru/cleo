@@ -19,6 +19,8 @@ import pika
 
 # local
 import cls_defs as df
+import wrk_email as wem
+import wrk_upload as wul
 
 # < logging >--------------------------------------------------------------------------------------
 
@@ -44,27 +46,44 @@ def callback(f_ch, f_method, f_properties, f_body):
     :param f_properties: document_me
     :param f_body: document_me
     """
+    # get parameters
+    ls_parms = f_body.decode()
+    M_LOG.debug("ls_parms: %s", ls_parms)
+
+    # strip parameters
+    llst_parms = ls_parms.split()
+    M_LOG.debug("llst_parms: %s", llst_parms)
+    M_LOG.debug("e-mail: %s", llst_parms[-1].strip())
+
     # logger
-    M_LOG.info(" [x] Received %r" % f_body.decode())
+    M_LOG.info(" [x] Received %r" % ls_parms)
 
     # exec WRF
-    ls_log = subprocess.run(["bash", DS_BASH_WRF, f_body.decode()], capture_output=True)
+    ls_log = subprocess.run(["bash", DS_BASH_WRF, ls_parms], capture_output=True)
     M_LOG.debug("ls_log: %s", ls_log)
 
+    # upload file to Google Drive
+    ls_link = wul.upload_file("teste.txt")
+    M_LOG.debug("ls_link: %s", ls_link)
+
+    if ls_link:
+        # send e-mail to user
+        wem.send_email(llst_parms[-1].strip(), ls_link)
+                
     # message acknowledgment
     f_ch.basic_ack(delivery_tag=f_method.delivery_tag)
-        
+
 # -------------------------------------------------------------------------------------------------
 def main():
     """
     drive app
     """
     # create credentials
-    l_cred = pika.PlainCredentials(df.DS_USER, df.DS_PASS)
+    l_cred = pika.PlainCredentials(df.hs.DS_MSQ_USR, df.hs.DS_MSQ_PWD)
     assert l_cred
 
     # create parameters
-    l_parm = pika.ConnectionParameters(host=df.DS_MSGQ_SRV, credentials=l_cred)
+    l_parm = pika.ConnectionParameters(host=df.DS_MSQ_SRV, credentials=l_cred)
     assert l_parm
     
     # create connection
