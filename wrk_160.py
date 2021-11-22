@@ -11,6 +11,7 @@ wrk_160
 import logging
 import os
 import pathlib
+import string
 import subprocess
 import sys
 
@@ -35,6 +36,9 @@ DS_SRC_PATH = pathlib.Path(__file__).resolve().parent
 
 # execWRF batch
 DS_BASH_WRF = pathlib.PurePath(DS_SRC_PATH, "execWRF.sh")
+
+# email template
+DS_EMAIL_BODY = string.Template("""Segue o link com o resultado da simulação:\n$link.""")
 
 # -------------------------------------------------------------------------------------------------
 def callback(f_ch, f_method, f_properties, f_body):
@@ -67,8 +71,11 @@ def callback(f_ch, f_method, f_properties, f_body):
     M_LOG.debug("ls_link: %s", ls_link)
 
     if ls_link:
+        # expand template
+        DS_EMAIL_BODY.substitute(link=ls_link)
+
         # send e-mail to user
-        wem.send_email(llst_parms[-1].strip(), ls_link)
+        wem.send_email(llst_parms[-1].strip(), DS_EMAIL_BODY)
                 
     # message acknowledgment
     f_ch.basic_ack(delivery_tag=f_method.delivery_tag)

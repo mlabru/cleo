@@ -35,20 +35,20 @@ M_LOG = logging.getLogger(__name__)
 M_LOG.setLevel(logging.DEBUG)
 
 # -------------------------------------------------------------------------------------------------
-def send_email(flst_to, fs_link):
+def send_email(flst_to, fs_body):
     """
     send email to user
 
     :param flst_to (str): the mail's array of recepients
-    :param fs_link (str): mail's link to file
+    :param fs_body (str): mail's body
     """
+    # create message
+    lem_message = emt.MIMEText(fs_body)
+    assert lem_message
+    
     # e-mail recipients
     to_addrs = flst_to if isinstance(flst_to, list) else [flst_to]
 
-    # create message
-    lem_message = emt.MIMEText(fs_link)
-    assert lem_message
-    
     # message subject
     lem_message["subject"] = DS_EMAIL_SUBJECT
     # message sender
