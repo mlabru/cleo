@@ -11,7 +11,6 @@ wrk_160
 import logging
 import os
 import pathlib
-import string
 import subprocess
 import sys
 
@@ -37,9 +36,6 @@ DS_SRC_PATH = pathlib.Path(__file__).resolve().parent
 # execWRF batch
 DS_BASH_WRF = pathlib.PurePath(DS_SRC_PATH, "execWRF.sh")
 
-# email template
-DS_EMAIL_BODY = string.Template("""Segue o link com o resultado da simulação:\n$link.""")
-
 # -------------------------------------------------------------------------------------------------
 def callback(f_ch, f_method, f_properties, f_body):
     """
@@ -54,29 +50,22 @@ def callback(f_ch, f_method, f_properties, f_body):
     ls_parms = f_body.decode()
     M_LOG.debug("ls_parms: %s", ls_parms)
 
-    # strip parameters
-    llst_parms = ls_parms.split()
-    M_LOG.debug("llst_parms: %s", llst_parms)
-    M_LOG.debug("e-mail: %s", llst_parms[-1].strip())
-
     # logger
     M_LOG.info(" [x] Received %r" % ls_parms)
+
+    # strip parameters
+    llst_parms = ls_parms.split()
+
+    # token
+    ls_token = "".join(llst_parms[:-1])
 
     # exec WRF
     ls_log = subprocess.run(["bash", DS_BASH_WRF, ls_parms], capture_output=True)
     M_LOG.debug("ls_log: %s", ls_log)
 
-    # upload file to Google Drive
-    ls_link = wul.upload_file("teste.txt")
-    M_LOG.debug("ls_link: %s", ls_link)
+    # send confirmation e-mail
+    wem.send_email(llst_parms[-1].strip(), ls_token, False)
 
-    if ls_link:
-        # expand template
-        DS_EMAIL_BODY.substitute(link=ls_link)
-
-        # send e-mail to user
-        wem.send_email(llst_parms[-1].strip(), DS_EMAIL_BODY)
-                
     # message acknowledgment
     f_ch.basic_ack(delivery_tag=f_method.delivery_tag)
 

@@ -52,14 +52,14 @@ def pag_openwrf():
     # na coluna 2
     with lwd_col2:
         # hora início
-        li_hora_ini = int(st.selectbox("Hora Inicial:", ["00", "06", "12", "18"]))
+        ls_hora_ini = st.selectbox("Hora Inicial:", ["00", "06", "12", "18"])
 
     # e-mail
     ls_email = st.text_input("E-mail para onde serão enviados os arquivos de saída:")
 
     # gera parâmetros
     ls_parm = "{} {} {} {} {} {} {}".format(
-                  ldt_ini.year, ldt_ini.month, ldt_ini.day, li_hora_ini, li_dlt, 
+                  ldt_ini.year, ldt_ini.month, ldt_ini.day, ls_hora_ini, li_dlt, 
                   df.DLST_REGIAO_SIGLA[df.DLST_REGIAO_NOME.index(ls_reg)],
                   ls_email)
 
