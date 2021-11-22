@@ -75,8 +75,8 @@ def upload_file(fs_fname):
 
         # change file permissions
         l_permission = l_gd_file_drive.InsertPermission({"type":  "anyone",
-                                                          "value": "anyone",
-                                                          "role":  "reader"})
+                                                         "value": "anyone",
+                                                         "role":  "reader"})
 
         # return link to file
         return l_gd_file_drive["alternateLink"]

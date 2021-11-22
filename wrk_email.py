@@ -25,9 +25,6 @@ DI_SMTP_PORT = 587
 # SMTP SSL port
 DI_SMTP_SSL_PORT = 465
 
-# email from address
-DS_EMAIL_FROM = "ml_sjc@yahoo.com.br"
-
 # email from subject
 DS_EMAIL_SUBJECT = "Resultado da Simulação"
 
@@ -55,7 +52,7 @@ def send_email(flst_to, fs_link):
     # message subject
     lem_message["subject"] = DS_EMAIL_SUBJECT
     # message sender
-    lem_message["from"] = DS_EMAIL_FROM
+    lem_message["from"] = df.hs.DS_YAH_USR
     # message recipients
     lem_message["to"] = ", ".join(to_addrs)
     M_LOG.debug("lem_message: %s", lem_message)
@@ -66,11 +63,11 @@ def send_email(flst_to, fs_link):
         
         l_server.starttls()
         l_server.login(df.hs.DS_YAH_USR, df.hs.DS_YAH_PWD)
-        l_server.sendmail(DS_EMAIL_FROM, to_addrs, lem_message.as_string())
+        l_server.sendmail(df.hs.DS_YAH_USR, to_addrs, lem_message.as_string())
         l_server.quit()
 
         # logger
-        M_LOG.info("successfully sent the mail.")
+        M_LOG.info("Successfully sent the mail.")
                 
     # em caso de erro,...
     except:
