@@ -3,6 +3,9 @@
 # language
 # export LANGUAGE=pt_BR
 
+# cleo directory
+CLEO=~/clsim/cleo
+
 # nome do computador
 HOST=`hostname`
 
@@ -10,9 +13,9 @@ HOST=`hostname`
 TDATE=`date '+%Y-%m-%d_%H-%M-%S'`
 
 # home directory exists ?
-if [ -d "/home/webpca/clsim/cleo" ]; then
+if [ -d ${CLEO} ]; then
     # set home dir
-    cd /home/webpca/clsim/cleo
+    cd ${CLEO}
 fi
 
 # executa a aplicação (-OO)
