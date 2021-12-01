@@ -24,8 +24,8 @@ PARMS=${CMDLIN[@]:0:$CLLEN-1}
 # token (parameters sem espaços)
 TOKEN="$(echo -e "${PARMS}" | tr -d '[:space:]')"
 
-# home dir do WRF
-cd /home/webpca/WRF
+# home dir do execWRF
+cd ~/clsim/execWRF
 
 # executa a aplicação
-bash ./runWRF.sh $@ > /home/webpca/clsim/cleo/logs/logWRF.$TOKEN.log 2>&1
+python3 exec_wrf.py $@ > ~/clsim/cleo/logs/logWRF.$TOKEN.log 2>&1
