@@ -20,8 +20,8 @@ DLST_REGIAO_NOME = ["Norte", "Sudeste"]
 DLST_REGIAO_SIGLA = ["N", "SE"]
 
 # RabbitMQ server
-DS_MSQ_SRV = "localhost"
-# DS_MSQ_SRV = "172.18.30.30"
+# DS_MSQ_SRV = "localhost"
+DS_MSQ_SRV = "172.18.30.30"
 
 # simulation result upload
 DV_RESULT_UPLOAD = False

@@ -48,7 +48,7 @@ def callback(f_ch, f_method, f_properties, f_body):
     """
     # get parameters
     ls_parms = f_body.decode()
-    M_LOG.debug("ls_parms: %s", ls_parms)
+    M_LOG.debug("160 parms: %s", ls_parms)
 
     # logger
     M_LOG.info(" [x] Received %r" % ls_parms)
@@ -61,10 +61,10 @@ def callback(f_ch, f_method, f_properties, f_body):
 
     # exec WRF
     ls_log = subprocess.run(["bash", DS_BASH_WRF, ls_parms], capture_output=True)
-    M_LOG.debug("ls_log: %s", ls_log)
+    M_LOG.debug("wrf log: %s", ls_log)
 
     # send confirmation e-mail
-    wem.send_email(llst_parms[-1].strip(), ls_token, False)
+    # wem.send_email(llst_parms[-1].strip(), ls_token, False)
 
     # message acknowledgment
     f_ch.basic_ack(delivery_tag=f_method.delivery_tag)
