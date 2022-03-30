@@ -26,12 +26,4 @@ DS_MSQ_SRV = "172.18.30.30"
 # simulation result upload
 DV_RESULT_UPLOAD = False
 
-# -------------------------------------------------------------------------------------------------
-import imp
-
-# open secrets files
-with open(".hidden/cls_secrets.py", "rb") as lfh:
-    # import module
-    hs = imp.load_module(".hidden", lfh, ".hidden/cls_secrets", (".py", "rb", imp.PY_SOURCE))
-
 # < the end >--------------------------------------------------------------------------------------
