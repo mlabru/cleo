@@ -4,11 +4,12 @@ cleo
 
 2021/nov  1.0  mlabru   initial version (Linux/Python)
 """
-# < imports >--------------------------------------------------------------------------------------
+# < imports >----------------------------------------------------------------------------------
 
 # python library
 import datetime
 import logging
+import os
 
 # pika (RabbitMQ client)
 import pika
@@ -16,20 +17,35 @@ import pika
 # streamlit
 import streamlit as st
 
-# local
-import cls_defs as df
+# .env
+from dotenv import load_dotenv
 
-# < logging >--------------------------------------------------------------------------------------
+# local
+import cls_defs as dfs
+
+# < environment >------------------------------------------------------------------------------
+
+# take environment variables from .env
+load_dotenv()
+
+# message queue user/passwd
+DS_MSQ_USR = os.getenv("DS_MSQ_USR")
+DS_MSQ_PWD = os.getenv("DS_MSQ_PWD")
+
+# < logging >----------------------------------------------------------------------------------
 
 # logger
 M_LOG = logging.getLogger(__name__)
-M_LOG.setLevel(logging.DEBUG)
+M_LOG.setLevel(dfs.DI_LOG_LEVEL)
 
-# -------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------
 def pag_openwrf():
     """
     página de execução do OpenWRF
     """
+    # logger
+    M_LOG.info("pag_openwrf >>")
+
     # top image
     st.image("wrfmodel.jpg")
     
@@ -37,7 +53,7 @@ def pag_openwrf():
     st.title("openWRF")
 
     # seleção da região
-    ls_reg = st.selectbox("Região:", df.DLST_REGIAO_NOME)
+    ls_reg = st.selectbox("Região:", dfs.DLST_REGIAO_NOME)
 
     # cria 2 colunas
     lwd_col1, lwd_col2 = st.columns(2)
@@ -60,7 +76,7 @@ def pag_openwrf():
     # gera parâmetros
     ls_parm = "{} {} {} {} {} {} {}".format(
                   ldt_ini.year, ldt_ini.month, ldt_ini.day, ls_hora_ini, li_dlt, 
-                  df.DLST_REGIAO_SIGLA[df.DLST_REGIAO_NOME.index(ls_reg)],
+                  dfs.DLST_REGIAO_SIGLA[dfs.DLST_REGIAO_NOME.index(ls_reg)],
                   ls_email)
 
     # e-mail ok ?
@@ -75,16 +91,17 @@ def pag_openwrf():
     lv_submit = st.button("Gerar previsão", on_click=send_msg, args=(ls_parm,)) if lv_ok else False
 
     if lv_submit:
-        # send message
-        send_msg(ls_parm)
         # ok
         st.success("O job foi eviado para execução. O resultado retornará no e-mail selecionado em algumas horas. Obrigado.")
 
-# -------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------
 def pag_frontline():
     """
     página de execução do Frontline
     """
+    # logger
+    M_LOG.info("pag_frontline >>")
+
     # título da página
     st.title("Frontline (Carrapato Killer)")
 
@@ -118,17 +135,24 @@ def pag_frontline():
         print("ldt_fin:", ldt_fin, type(ldt_fin))
         print("ltm_fin:", ltm_fin, type(ltm_fin))
 
-# -------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------
 def send_msg(fs_parm):
     """
     send message to queue 'execWRF'
     """
+    # logger
+    M_LOG.info("send_msg >>")
+
+    M_LOG.debug("DS_MSQ_USR: %s", DS_MSQ_USR)
+    M_LOG.debug("DS_MSQ_PWD: %s", DS_MSQ_PWD)
+    M_LOG.debug("DS_MSQ_SRV: %s", dfs.DS_MSQ_SRV)
+
     # create credentials
-    l_cred = pika.PlainCredentials(df.hs.DS_MSQ_USR, df.hs.DS_MSQ_PWD)
+    l_cred = pika.PlainCredentials(DS_MSQ_USR, DS_MSQ_PWD)
     assert l_cred
 
     # create parameters
-    l_parm = pika.ConnectionParameters(host=df.DS_MSQ_SRV, credentials=l_cred)
+    l_parm = pika.ConnectionParameters(host=dfs.DS_MSQ_SRV, credentials=l_cred)
     assert l_parm
     
     # create connection
@@ -156,11 +180,14 @@ def send_msg(fs_parm):
     # close connection
     l_conn.close()
 
-# -------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------
 def main():
     """
     drive app
     """
+    # logger
+    M_LOG.info("main >>")
+
     # app title
     st.sidebar.title("Centro Logístico de Simulação Meteorológica")
     # app selection
@@ -176,12 +203,12 @@ def main():
         # call frontline page
         pag_frontline()
         
-# -------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------
 # this is the bootstrap process
         
 if "__main__" == __name__:
     # logger
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=dfs.DI_LOG_LEVEL)
  
     # disable logging
     # logging.disable(sys.maxint)
@@ -189,4 +216,4 @@ if "__main__" == __name__:
     # run application
     main()
 
-# < the end >--------------------------------------------------------------------------------------
+# < the end >----------------------------------------------------------------------------------

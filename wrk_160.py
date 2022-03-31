@@ -17,16 +17,28 @@ import sys
 # pika
 import pika
 
+# .env
+from dotenv import load_dotenv
+
 # local
-import cls_defs as df
+import cls_defs as dfs
 import wrk_email as wem
 import wrk_upload as wul
+
+# < environment >------------------------------------------------------------------------------
+
+# take environment variables from .env
+load_dotenv()
+
+# message queue user/passwd
+DS_MSQ_USR = os.getenv("DS_MSQ_USR")
+DS_MSQ_PWD = os.getenv("DS_MSQ_PWD")
 
 # < logging >--------------------------------------------------------------------------------------
 
 # logger
 M_LOG = logging.getLogger(__name__)
-M_LOG.setLevel(logging.DEBUG)
+M_LOG.setLevel(dfs.DI_LOG_LEVEL)
 
 # < defines >--------------------------------------------------------------------------------------
 
@@ -46,6 +58,9 @@ def callback(f_ch, f_method, f_properties, f_body):
     :param f_properties: document_me
     :param f_body: document_me
     """
+    # logger
+    M_LOG.info("callback >>")
+
     # get parameters
     ls_parms = f_body.decode()
     M_LOG.debug("160 parms: %s", ls_parms)
@@ -58,6 +73,8 @@ def callback(f_ch, f_method, f_properties, f_body):
 
     # token
     ls_token = "".join(llst_parms[:-1])
+
+    M_LOG.debug("160 subprocess.run:%s", str(["bash", DS_BASH_WRF, ls_parms]))
 
     # exec WRF
     ls_log = subprocess.run(["bash", DS_BASH_WRF, ls_parms], capture_output=True)
@@ -74,12 +91,19 @@ def main():
     """
     drive app
     """
+    # logger
+    M_LOG.info("main >>")
+
+    M_LOG.debug("DS_MSQ_USR: %s", DS_MSQ_USR)
+    M_LOG.debug("DS_MSQ_PWD: %s", DS_MSQ_PWD)
+    M_LOG.debug("DS_MSQ_SRV: %s", dfs.DS_MSQ_SRV)
+
     # create credentials
-    l_cred = pika.PlainCredentials(df.hs.DS_MSQ_USR, df.hs.DS_MSQ_PWD)
+    l_cred = pika.PlainCredentials(DS_MSQ_USR, DS_MSQ_PWD)
     assert l_cred
 
     # create parameters
-    l_parm = pika.ConnectionParameters(host=df.DS_MSQ_SRV, credentials=l_cred)
+    l_parm = pika.ConnectionParameters(host=dfs.DS_MSQ_SRV, credentials=l_cred)
     assert l_parm
     
     # create connection
@@ -110,7 +134,7 @@ def main():
 
 if "__main__" == __name__:
     # logger
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=dfs.DI_LOG_LEVEL)
 
     # disable logging
     # logging.disable(sys.maxint)

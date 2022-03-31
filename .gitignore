@@ -2,6 +2,7 @@
 *~
 *.bak
 .bkp/
+.data/
 .hidden/
 
 # Byte-compiled / optimized / DLL files
