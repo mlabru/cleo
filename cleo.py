@@ -9,6 +9,7 @@ cleo
 # python library
 import datetime
 import logging
+import os
 
 # pika (RabbitMQ client)
 import pika
@@ -42,6 +43,9 @@ def pag_openwrf():
     """
     página de execução do OpenWRF
     """
+    # logger
+    M_LOG.info("pag_openwrf >>")
+
     # top image
     st.image("wrfmodel.jpg")
     
@@ -87,8 +91,6 @@ def pag_openwrf():
     lv_submit = st.button("Gerar previsão", on_click=send_msg, args=(ls_parm,)) if lv_ok else False
 
     if lv_submit:
-        # send message
-        send_msg(ls_parm)
         # ok
         st.success("O job foi eviado para execução. O resultado retornará no e-mail selecionado em algumas horas. Obrigado.")
 
@@ -97,6 +99,9 @@ def pag_frontline():
     """
     página de execução do Frontline
     """
+    # logger
+    M_LOG.info("pag_frontline >>")
+
     # título da página
     st.title("Frontline (Carrapato Killer)")
 
@@ -135,6 +140,13 @@ def send_msg(fs_parm):
     """
     send message to queue 'execWRF'
     """
+    # logger
+    M_LOG.info("send_msg >>")
+
+    M_LOG.debug("DS_MSQ_USR: %s", DS_MSQ_USR)
+    M_LOG.debug("DS_MSQ_PWD: %s", DS_MSQ_PWD)
+    M_LOG.debug("DS_MSQ_SRV: %s", dfs.DS_MSQ_SRV)
+
     # create credentials
     l_cred = pika.PlainCredentials(DS_MSQ_USR, DS_MSQ_PWD)
     assert l_cred
@@ -173,6 +185,8 @@ def main():
     """
     drive app
     """
+    # logger
+    M_LOG.info("main >>")
 
     # app title
     st.sidebar.title("Centro Logístico de Simulação Meteorológica")
