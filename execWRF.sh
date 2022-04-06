@@ -18,7 +18,7 @@ CLLEN=${#CMDLIN[@]}
 # email
 EMAIL=${CMDLIN[$CLLEN-1]}
 
-# parameters (região, data ini, data fim)
+# parameters (data ini, data fim, região)
 PARMS=${CMDLIN[@]:0:$CLLEN-1}
 
 # token (parameters sem espaços)

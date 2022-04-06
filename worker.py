@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-wrk_160
-160 work queue consumer
+worker
+work queue consumer
 
 2021/nov  1.0  mlabru   initial version (Linux/Python)
 """
-# < imports >--------------------------------------------------------------------------------------
+# < imports >----------------------------------------------------------------------------------
 
 # python library
 import logging
@@ -13,6 +13,9 @@ import os
 import pathlib
 import subprocess
 import sys
+
+# graylog
+import graypy
 
 # pika
 import pika
@@ -34,13 +37,21 @@ load_dotenv()
 DS_MSQ_USR = os.getenv("DS_MSQ_USR")
 DS_MSQ_PWD = os.getenv("DS_MSQ_PWD")
 
-# < logging >--------------------------------------------------------------------------------------
+# < logging >----------------------------------------------------------------------------------
 
 # logger
 M_LOG = logging.getLogger(__name__)
 M_LOG.setLevel(dfs.DI_LOG_LEVEL)
 
-# < defines >--------------------------------------------------------------------------------------
+# graylog handler
+M_GLH = graypy.GELFUDPHandler("localhost", 12201)
+M_LOG.addHandler(M_GLH)
+
+# pika logger
+pika_logger = logging.getLogger("pika")
+pika_logger.setLevel(logging.ERROR)
+
+# < defines >----------------------------------------------------------------------------------
 
 # source path
 DS_SRC_PATH = pathlib.Path(__file__).resolve().parent
@@ -48,7 +59,7 @@ DS_SRC_PATH = pathlib.Path(__file__).resolve().parent
 # execWRF batch
 DS_BASH_WRF = pathlib.PurePath(DS_SRC_PATH, "execWRF.sh")
 
-# -------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------
 def callback(f_ch, f_method, f_properties, f_body):
     """
     process messages callback
@@ -59,11 +70,10 @@ def callback(f_ch, f_method, f_properties, f_body):
     :param f_body: document_me
     """
     # logger
-    M_LOG.info("callback >>")
+    M_LOG.debug("callback >>")
 
     # get parameters
     ls_parms = f_body.decode()
-    M_LOG.debug("160 parms: %s", ls_parms)
 
     # logger
     M_LOG.info(" [x] Received %r" % ls_parms)
@@ -73,12 +83,20 @@ def callback(f_ch, f_method, f_properties, f_body):
 
     # token
     ls_token = "".join(llst_parms[:-1])
+    M_LOG.debug("wrf ls_token: %s", ls_token)
 
-    M_LOG.debug("160 subprocess.run:%s", str(["bash", DS_BASH_WRF, ls_parms]))
+    M_LOG.debug("wrk subprocess.run:%s", str(["bash", DS_BASH_WRF, ls_parms]))
 
     # exec WRF
     ls_log = subprocess.run(["bash", DS_BASH_WRF, ls_parms], capture_output=True)
     M_LOG.debug("wrf log: %s", ls_log)
+
+    # obtém o diretório de saída
+    # get out dir
+    # remove file
+
+    # move result to sftp
+    # wem.move_sftp(llst_parms[-1].strip(), ls_token, False)
 
     # send confirmation e-mail
     # wem.send_email(llst_parms[-1].strip(), ls_token, False)
@@ -86,17 +104,13 @@ def callback(f_ch, f_method, f_properties, f_body):
     # message acknowledgment
     f_ch.basic_ack(delivery_tag=f_method.delivery_tag)
 
-# -------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------
 def main():
     """
     drive app
     """
     # logger
-    M_LOG.info("main >>")
-
-    M_LOG.debug("DS_MSQ_USR: %s", DS_MSQ_USR)
-    M_LOG.debug("DS_MSQ_PWD: %s", DS_MSQ_PWD)
-    M_LOG.debug("DS_MSQ_SRV: %s", dfs.DS_MSQ_SRV)
+    M_LOG.debug("main >>")
 
     # create credentials
     l_cred = pika.PlainCredentials(DS_MSQ_USR, DS_MSQ_PWD)
@@ -129,7 +143,7 @@ def main():
     # start consuming
     l_chnl.start_consuming()
 
-# -------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------
 # this is the bootstrap process
 
 if "__main__" == __name__:
@@ -157,5 +171,5 @@ if "__main__" == __name__:
             # quit
             os._exit(0)
 
-# < the end >--------------------------------------------------------------------------------------
+# < the end >----------------------------------------------------------------------------------
             

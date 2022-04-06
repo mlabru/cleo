@@ -25,4 +25,4 @@ if ! [ "$( docker container inspect -f '{{.State.Running}}' rabbitmq )" == "true
 fi
 
 # executa a aplicação (-OO)
-python3 wrk_160.py > logs/wrk_160.$HOST.$TDATE.log 2>&1 &
+python3 worker.py > logs/worker.$HOST.$TDATE.log 2>&1 &
