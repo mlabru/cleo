@@ -11,6 +11,9 @@ import datetime
 import logging
 import os
 
+# graylog
+import graypy
+
 # pika (RabbitMQ client)
 import pika
 
@@ -37,6 +40,10 @@ DS_MSQ_PWD = os.getenv("DS_MSQ_PWD")
 # logger
 M_LOG = logging.getLogger(__name__)
 M_LOG.setLevel(dfs.DI_LOG_LEVEL)
+
+# graylog handler
+M_GLH = graypy.GELFUDPHandler("localhost", 12201)
+M_LOG.addHandler(M_GLH)
 
 # pika logger
 pika_logger = logging.getLogger("pika")

@@ -32,6 +32,8 @@ if [ ! -z "$DI_PID_WORKER" ]; then
     echo "[`date`]: process worker is already running. Restarting..."
     # kill process
     kill -9 $DI_PID_WORKER
+    # wait 1s
+    sleep 1
 fi
 
 # executa o worker (message queue consumer)
@@ -45,6 +47,8 @@ if [ ! -z "$DI_PID_CLEO" ]; then
     echo "[`date`]: process cleo is already running. Restarting..."
     # kill process
     kill -9 $DI_PID_CLEO
+    # wait 1s
+    sleep 1
 fi
 
 # executa a aplicação (-OO)

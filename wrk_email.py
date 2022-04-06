@@ -68,7 +68,7 @@ def _send_message(flst_to, fem_message):
     # em caso de erro,...
     except:
         # logger
-        M_LOG.error("Erro em email_service")
+        M_LOG.error("Erro em email_service", exc_info=1)
 
 # -------------------------------------------------------------------------------------------------
 def send_email(flst_to, fs_token, fv_upload=df.DV_RESULT_UPLOAD):

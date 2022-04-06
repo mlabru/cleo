@@ -38,7 +38,7 @@ def upload_file(fs_fname):
     # em caso de erro,...
     except:
         # logger
-        M_LOG.error("Erro na autenticação do Google Drive.")
+        M_LOG.error("Erro na autenticação do Google Drive.", exc_info=1)
         # quit
         return None
 
@@ -58,7 +58,7 @@ def upload_file(fs_fname):
         # em caso de erro,...
         except:
             # logger
-            M_LOG.error("Erro na criação do arquivo.")
+            M_LOG.error("Erro na criação do arquivo.", exc_info=1)
             # quit
             return None
 
@@ -69,7 +69,7 @@ def upload_file(fs_fname):
         # em caso de erro,...
         except:
             # logger
-            M_LOG.error("Erro no upload do arquivo.")
+            M_LOG.error("Erro no upload do arquivo.", exc_info=1)
             # quit
             return None
 
