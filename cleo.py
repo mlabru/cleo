@@ -85,9 +85,9 @@ def pag_openwrf():
     ls_email = st.text_input("E-mail para onde será enviado o arquivo de saída:")
 
     # gera parâmetros
-    ls_parm = "{} {:04d} {:02d} {:02d} {} {:02d} {}".format(
-              dfs.DLST_REGIAO_SIGLA[dfs.DLST_REGIAO_NOME.index(ls_reg)],
+    ls_parm = "{:04d} {:02d} {:02d} {} {:02d} {} {}".format(
               ldt_ini.year, ldt_ini.month, ldt_ini.day, ls_hora_ini, li_dlt, 
+              dfs.DLST_REGIAO_SIGLA[dfs.DLST_REGIAO_NOME.index(ls_reg)],
               ls_email)
 
     # e-mail ok ?
