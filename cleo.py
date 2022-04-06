@@ -38,13 +38,17 @@ DS_MSQ_PWD = os.getenv("DS_MSQ_PWD")
 M_LOG = logging.getLogger(__name__)
 M_LOG.setLevel(dfs.DI_LOG_LEVEL)
 
+# pika logger
+pika_logger = logging.getLogger("pika")
+pika_logger.setLevel(logging.ERROR)
+
 # ---------------------------------------------------------------------------------------------
 def pag_openwrf():
     """
     página de execução do OpenWRF
     """
     # logger
-    M_LOG.info("pag_openwrf >>")
+    M_LOG.debug("pag_openwrf >>")
 
     # top image
     st.image("wrfmodel.jpg")
@@ -58,26 +62,26 @@ def pag_openwrf():
     # cria 2 colunas
     lwd_col1, lwd_col2 = st.columns(2)
 
-    # na coluna 1
+    # na coluna 1...
     with lwd_col1:
         # data início
         ldt_ini = st.date_input("Data Inicial (AAAA/MM/DD):")
         # intervalo de simulação
         li_dlt = st.selectbox("Intervalo de Simulação (horas):", [24, 48, 72])
 
-    # na coluna 2
+    # na coluna 2...
     with lwd_col2:
         # hora início
         ls_hora_ini = st.selectbox("Hora Inicial:", ["00", "06", "12", "18"])
 
     # e-mail
-    ls_email = st.text_input("E-mail para onde serão enviados os arquivos de saída:")
+    ls_email = st.text_input("E-mail para onde será enviado o arquivo de saída:")
 
     # gera parâmetros
-    ls_parm = "{} {} {} {} {} {} {}".format(
-                  ldt_ini.year, ldt_ini.month, ldt_ini.day, ls_hora_ini, li_dlt, 
-                  dfs.DLST_REGIAO_SIGLA[dfs.DLST_REGIAO_NOME.index(ls_reg)],
-                  ls_email)
+    ls_parm = "{} {:04d} {:02d} {:02d} {} {:02d} {}".format(
+              dfs.DLST_REGIAO_SIGLA[dfs.DLST_REGIAO_NOME.index(ls_reg)],
+              ldt_ini.year, ldt_ini.month, ldt_ini.day, ls_hora_ini, li_dlt, 
+              ls_email)
 
     # e-mail ok ?
     if not ls_email:
@@ -92,7 +96,9 @@ def pag_openwrf():
 
     if lv_submit:
         # ok
-        st.success("O job foi eviado para execução. O resultado retornará no e-mail selecionado em algumas horas. Obrigado.")
+        st.success("O job foi eviado para execução.\n" \
+                   "Um link para o resultado retornará no e-mail selecionado em algumas horas.\n" \
+                   "Obrigado.")
 
 # ---------------------------------------------------------------------------------------------
 def pag_frontline():
@@ -100,7 +106,7 @@ def pag_frontline():
     página de execução do Frontline
     """
     # logger
-    M_LOG.info("pag_frontline >>")
+    M_LOG.debug("pag_frontline >>")
 
     # título da página
     st.title("Frontline (Carrapato Killer)")
@@ -141,11 +147,7 @@ def send_msg(fs_parm):
     send message to queue 'execWRF'
     """
     # logger
-    M_LOG.info("send_msg >>")
-
-    M_LOG.debug("DS_MSQ_USR: %s", DS_MSQ_USR)
-    M_LOG.debug("DS_MSQ_PWD: %s", DS_MSQ_PWD)
-    M_LOG.debug("DS_MSQ_SRV: %s", dfs.DS_MSQ_SRV)
+    M_LOG.debug("send_msg >>")
 
     # create credentials
     l_cred = pika.PlainCredentials(DS_MSQ_USR, DS_MSQ_PWD)
