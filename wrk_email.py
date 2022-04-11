@@ -20,6 +20,7 @@ import string
 
 # local
 import cls_defs as df
+import wrk_upload as wul
 
 # < defines >--------------------------------------------------------------------------------------
 

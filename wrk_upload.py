@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 wrk_upload
-upload file to Google Drive
+upload file to SFTP server
 
 2021/nov  1.0  mlabru   initial version (Linux/Python)
 """
@@ -10,10 +10,6 @@ upload file to Google Drive
 # python library
 import logging
 import os
-
-# pyDrive
-import pydrive.auth as gda
-import pydrive.drive as gdd
 
 # < logging >--------------------------------------------------------------------------------------
 
@@ -28,12 +24,13 @@ def upload_file(fs_fname):
     """
     try:
         # login to Google Drive
-        l_gd_login = gda.GoogleAuth()
-        assert l_gd_login
+        # l_gd_login = gda.GoogleAuth()
+        # assert l_gd_login
 
         # create drive object
-        l_gd_drive = gdd.GoogleDrive(l_gd_login)
-        assert l_gd_drive
+        # l_gd_drive = gdd.GoogleDrive(l_gd_login)
+        # assert l_gd_drive
+        pass
 
     # em caso de erro,...
     except:
@@ -49,11 +46,12 @@ def upload_file(fs_fname):
 
         try:
             # create file on GDrive
-            l_gd_file_drive = l_gd_drive.CreateFile({"title": ls_fbase})
-            assert l_gd_file_drive
+            # l_gd_file_drive = l_gd_drive.CreateFile({"title": ls_fbase})
+            # assert l_gd_file_drive
             
             # set file contents
-            l_gd_file_drive.SetContentString(lfh_in.read())
+            # l_gd_file_drive.SetContentString(lfh_in.read())
+            pass
 
         # em caso de erro,...
         except:
@@ -64,7 +62,8 @@ def upload_file(fs_fname):
 
         try:
             # upload file
-            l_gd_file_drive.Upload()
+            # l_gd_file_drive.Upload()
+            pass
 
         # em caso de erro,...
         except:
@@ -74,12 +73,13 @@ def upload_file(fs_fname):
             return None
 
         # change file permissions
-        l_permission = l_gd_file_drive.InsertPermission({"type":  "anyone",
-                                                         "value": "anyone",
-                                                         "role":  "reader"})
+        # l_permission = l_gd_file_drive.InsertPermission({"type":  "anyone",
+        #                                                  "value": "anyone",
+        #                                                  "role":  "reader"})
 
         # return link to file
-        return l_gd_file_drive["alternateLink"]
+        # return l_gd_file_drive["alternateLink"]
+        return ""
 
     # return
     return None
