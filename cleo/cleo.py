@@ -25,7 +25,7 @@ import streamlit as st
 from dotenv import load_dotenv
 
 # local
-import cls_defs as dfs
+import cls_defs as df
 
 # < environment >------------------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ DS_MSQ_PWD = os.getenv("DS_MSQ_PWD")
 
 # logger
 M_LOG = logging.getLogger(__name__)
-M_LOG.setLevel(dfs.DI_LOG_LEVEL)
+M_LOG.setLevel(df.DI_LOG_LEVEL)
 
 # graylog handler
 M_GLH = graypy.GELFUDPHandler("localhost", 12201)
@@ -65,7 +65,7 @@ def pag_openwrf():
     st.title("openWRF")
 
     # seleção da região
-    ls_reg = st.selectbox("Região:", dfs.DLST_REGIAO_NOME)
+    ls_reg = st.selectbox("Região:", df.DLST_REGIAO_NOME)
 
     # cria 2 colunas
     lwd_col1, lwd_col2 = st.columns(2)
@@ -88,7 +88,7 @@ def pag_openwrf():
     # gera parâmetros
     ls_parm = "{:04d} {:02d} {:02d} {} {:02d} {} {}".format(
               ldt_ini.year, ldt_ini.month, ldt_ini.day, ls_hora_ini, li_dlt, 
-              dfs.DLST_REGIAO_SIGLA[dfs.DLST_REGIAO_NOME.index(ls_reg)],
+              df.DLST_REGIAO_SIGLA[df.DLST_REGIAO_NOME.index(ls_reg)],
               ls_email)
 
     # e-mail ok ?
@@ -164,7 +164,7 @@ def send_msg(fs_parm):
     assert l_cred
 
     # create parameters
-    l_parm = pika.ConnectionParameters(host=dfs.DS_MSQ_SRV, credentials=l_cred)
+    l_parm = pika.ConnectionParameters(host=df.DS_MSQ_SRV, credentials=l_cred)
     assert l_parm
     
     # create connection

@@ -25,7 +25,7 @@ import pika
 from dotenv import load_dotenv
 
 # local
-import cls_defs as dfs
+import cls_defs as df
 import wrk_email as wem
 
 # < environment >------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ DS_MSQ_PWD = os.getenv("DS_MSQ_PWD")
 
 # logger
 M_LOG = logging.getLogger(__name__)
-M_LOG.setLevel(dfs.DI_LOG_LEVEL)
+M_LOG.setLevel(df.DI_LOG_LEVEL)
 
 # graylog handler
 M_GLH = graypy.GELFUDPHandler("localhost", 12201)
@@ -106,7 +106,7 @@ def main():
     assert l_cred
 
     # create parameters
-    l_parm = pika.ConnectionParameters(host=dfs.DS_MSQ_SRV, credentials=l_cred)
+    l_parm = pika.ConnectionParameters(host=df.DS_MSQ_SRV, credentials=l_cred)
     assert l_parm
     
     # create connection
