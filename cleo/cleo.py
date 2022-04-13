@@ -2,7 +2,8 @@
 """
 cleo
 
-2021/nov  1.0  mlabru   initial version (Linux/Python)
+2022/apr  1.1  mlabru  graylog log management
+2021/nov  1.0  mlabru  initial version (Linux/Python)
 """
 # < imports >----------------------------------------------------------------------------------
 
@@ -20,7 +21,7 @@ import pika
 # streamlit
 import streamlit as st
 
-# .env
+# dotenv
 from dotenv import load_dotenv
 
 # local
@@ -99,13 +100,15 @@ def pag_openwrf():
     lv_ok = ls_email
 
     # submit button
-    lv_submit = st.button("Gerar previsão", on_click=send_msg, args=(ls_parm,)) if lv_ok else False
+    lv_submit = st.button("Gerar previsão", 
+                          on_click=send_msg, 
+                          args=(ls_parm,)) if lv_ok else False
 
     if lv_submit:
         # ok
         st.success("O job foi eviado para execução.\n" \
-                   "Um link para o resultado retornará no e-mail selecionado em algumas horas.\n" \
-                   "Obrigado.")
+                   "Um link para o resultado ou uma mensagem de erro retornará no e-mail" \
+                   " selecionado em algumas horas.\n" "Obrigado.")
 
 # ---------------------------------------------------------------------------------------------
 def pag_frontline():
@@ -217,7 +220,9 @@ def main():
         
 if "__main__" == __name__:
     # logger
-    logging.basicConfig(level=dfs.DI_LOG_LEVEL)
+    logging.basicConfig(datefmt="%d/%m/%Y %H:%M",
+                        format="%(asctime)s %(message)s",
+                        level=df.DI_LOG_LEVEL)
  
     # disable logging
     # logging.disable(sys.maxint)

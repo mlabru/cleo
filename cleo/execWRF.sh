@@ -27,7 +27,5 @@ TOKEN="$(echo -e "${PARMS}" | tr -d '[:space:]')"
 # home dir do execWRF
 cd ~/clsim/execWRF
 
-echo "Token: $TOKEN / Parms: $PARMS / E-mail: $EMAIL"
-
 # executa a aplicação
-python3 exec_wrf.py $@ > ~/clsim/cleo/logs/logWRF.$TOKEN.log 2>&1
+python3 execWRF/exec_wrf.py $@ > logs/execWRF.$TOKEN.log 2>&1

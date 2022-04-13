@@ -5,7 +5,7 @@ send message to user
 
 2021/nov  1.0  mlabru   initial version (Linux/Python)
 """
-# < imports >--------------------------------------------------------------------------------------
+# < imports >----------------------------------------------------------------------------------
 
 # python library
 import email.mime.application as ema
@@ -22,7 +22,7 @@ import string
 import cls_defs as df
 import wrk_upload as wul
 
-# < defines >--------------------------------------------------------------------------------------
+# < defines >----------------------------------------------------------------------------------
 
 # SMTP host address
 DS_SMTP_HOST = "smtp.mail.yahoo.com"
@@ -38,13 +38,13 @@ DS_EMAIL_BODY = string.Template("Segue o link com o resultado da simulação:\n\
 # email from subject
 DS_EMAIL_SUBJECT = "Resultado da Simulação"
 
-# < logging >--------------------------------------------------------------------------------------
+# < logging >----------------------------------------------------------------------------------
 
 # logger
 M_LOG = logging.getLogger(__name__)
 M_LOG.setLevel(logging.DEBUG)
 
-# -------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------
 def _send_message(flst_to, fem_message):
     """
     send message to user
@@ -71,7 +71,7 @@ def _send_message(flst_to, fem_message):
         # logger
         M_LOG.error("Erro em email_service", exc_info=1)
 
-# -------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------
 def send_email(flst_to, fs_token, fv_upload=df.DV_RESULT_UPLOAD):
     """
     send confirmation e-mail
@@ -129,4 +129,4 @@ def send_email(flst_to, fs_token, fv_upload=df.DV_RESULT_UPLOAD):
     # send message
     _send_message(llst_to, lem_message)
                 
-# < the end >--------------------------------------------------------------------------------------
+# < the end >----------------------------------------------------------------------------------

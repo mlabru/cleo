@@ -3,7 +3,8 @@
 worker
 work queue consumer
 
-2021/nov  1.0  mlabru   initial version (Linux/Python)
+2022/apr  1.1  mlabru  graylog log management
+2021/nov  1.0  mlabru  initial version (Linux/Python)
 """
 # < imports >----------------------------------------------------------------------------------
 
@@ -20,13 +21,12 @@ import graypy
 # pika
 import pika
 
-# .env
+# dotenv
 from dotenv import load_dotenv
 
 # local
 import cls_defs as dfs
 import wrk_email as wem
-import wrk_upload as wul
 
 # < environment >------------------------------------------------------------------------------
 
@@ -83,20 +83,9 @@ def callback(f_ch, f_method, f_properties, f_body):
 
     # token
     ls_token = "".join(llst_parms[:-1])
-    M_LOG.debug("wrf ls_token: %s", ls_token)
-
-    M_LOG.debug("wrk subprocess.run:%s", str(["bash", DS_BASH_WRF, ls_parms]))
 
     # exec WRF
     ls_log = subprocess.run(["bash", DS_BASH_WRF, ls_parms], capture_output=True)
-    M_LOG.debug("wrf log: %s", ls_log)
-
-    # obtém o diretório de saída
-    # get out dir
-    # remove file
-
-    # move result to sftp
-    # wem.move_sftp(llst_parms[-1].strip(), ls_token, False)
 
     # send confirmation e-mail
     # wem.send_email(llst_parms[-1].strip(), ls_token, False)
@@ -148,7 +137,9 @@ def main():
 
 if "__main__" == __name__:
     # logger
-    logging.basicConfig(level=dfs.DI_LOG_LEVEL)
+    logging.basicConfig(datefmt="%d/%m/%Y %H:%M",
+                        format="%(asctime)s %(message)s",
+                        level=df.DI_LOG_LEVEL)
 
     # disable logging
     # logging.disable(sys.maxint)
