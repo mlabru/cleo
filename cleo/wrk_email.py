@@ -18,9 +18,11 @@ import os
 import smtplib
 import string
 
+# graylog
+import graypy
+
 # local
 import cls_defs as df
-import wrk_upload as wul
 
 # < defines >----------------------------------------------------------------------------------
 
@@ -42,7 +44,11 @@ DS_EMAIL_SUBJECT = "Resultado da Simulação"
 
 # logger
 M_LOG = logging.getLogger(__name__)
-M_LOG.setLevel(logging.DEBUG)
+M_LOG.setLevel(df.DI_LOG_LEVEL)
+
+# graylog handler
+M_GLH = graypy.GELFUDPHandler("localhost", 12201)
+M_LOG.addHandler(M_GLH)
 
 # ---------------------------------------------------------------------------------------------
 def _send_message(flst_to, fem_message):
@@ -52,6 +58,9 @@ def _send_message(flst_to, fem_message):
     :param flst_to (list): the mail's array of recipients
     :param fem_message (MIMEMultipart): e-mail's body
     """
+    # logger
+    M_LOG.debug("_send_message >>")
+                
     try:
         # connect server
         l_server = smtplib.SMTP(DS_SMTP_HOST, DI_SMTP_PORT)
@@ -80,6 +89,9 @@ def send_email(flst_to, fs_token, fv_upload=df.DV_RESULT_UPLOAD):
     :param fs_token (str): document_me
     :param fv_upload (bool): document_me
     """
+    # logger
+    M_LOG.debug("send_email >>")
+                
     # e-mail recipients
     llst_to = flst_to if isinstance(flst_to, list) else [flst_to]
 
@@ -100,13 +112,14 @@ def send_email(flst_to, fs_token, fv_upload=df.DV_RESULT_UPLOAD):
     # upload file ?
     if fv_upload:
         # upload file to Google Drive
-        ls_link = wul.upload_file(fs_token)
-        M_LOG.debug("ls_link: %s", ls_link)
+        #ls_link = wul.upload_file(fs_token)
+        #M_LOG.debug("ls_link: %s", ls_link)
 
-        if ls_link:
+        #if ls_link:
             # e-mail link to user
-            lem_message.attach(emt.MIMEText(DS_EMAIL_BODY.substitute(link=ls_link)))
-
+            #lem_message.attach(emt.MIMEText(DS_EMAIL_BODY.substitute(link=ls_link)))
+        pass
+        
     # attach ?
     if not fv_upload:
         # e-mail link to user
