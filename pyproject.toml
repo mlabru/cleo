@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "cleo"
+version = "0.3.0"
+description = "Cleo"
+authors = ["Milton Abrunhosa <ml_byteman@yahoo.com.br>"]
+license = "LGPL2"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+graypy = "^2.1.0"
+pika = "^1.2.0"
+python-dotenv = "^0.20.0"
+streamlit = "^1.8.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
