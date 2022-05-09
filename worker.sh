@@ -3,8 +3,8 @@
 # language
 # export LANGUAGE=pt_BR
 
-# cleo directory
-CLEO=~/clsim/cleo
+# CLSim directory
+CLSIM=~/clsim
 
 # nome do computador
 HOST=`hostname`
@@ -13,9 +13,9 @@ HOST=`hostname`
 TDATE=`date '+%Y-%m-%d_%H-%M-%S'`
 
 # home directory exists ?
-if [ -d ${CLEO} ]; then
+if [ -d ${CLSIM} ]; then
     # set home dir
-    cd ${CLEO}
+    cd ${CLSIM}
 fi
 
 # rabbitMQ container not loaded ?

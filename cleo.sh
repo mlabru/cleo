@@ -3,8 +3,8 @@
 # language
 # export LANGUAGE=pt_BR
 
-# cleo directory
-CLEO=~/clsim/cleo
+# CLSim directory
+CLSIM=~/clsim
 
 # nome do computador
 HOST=`hostname`
@@ -13,17 +13,17 @@ HOST=`hostname`
 TDATE=`date '+%Y-%m-%d_%H-%M-%S'`
 
 # home directory exists ?
-if [ -d ${CLEO} ]; then
+if [ -d ${CLSIM} ]; then
     # set home dir
-    cd ${CLEO}
+    cd ${CLSIM}
 fi
 
 # rabbitMQ container not loaded ?
 if ! [ "$( docker container inspect -f '{{.State.Running}}' rabbitmq )" == "true" ]; then
     # upload rabbitmq
     docker-compose up -d &
-    # wait 3s
-    sleep 3
+    # wait 10s
+    sleep 15
 fi
 
 # ckeck if another instance of worker is running
