@@ -108,23 +108,39 @@ def main():
     # create parameters
     l_parm = pika.ConnectionParameters(host=df.DS_MSQ_SRV, credentials=l_cred)
     assert l_parm
+
+    # RabbitMQ connection exceptions
+    lset_connect_exceptions = (pika.exceptions.ConnectionClosed,
+                               pika.exceptions.AMQPConnectionError,
+                               pika.exceptions.IncompatibleProtocolError)
     
-    # create connection
-    l_conn = pika.BlockingConnection(l_parm)
-    assert l_conn
+    try:
+        # create connection
+        l_conn = pika.BlockingConnection(l_parm)
+        assert l_conn
+
+    # em caso de erro...
+    except lset_connect_exceptions as ls_err:
+        # logger
+        M_LOG.debug("DS_MSQ_USR: %s", DS_MSQ_USR)
+        M_LOG.debug("DS_MSQ_PWD: %s", DS_MSQ_PWD)
+        M_LOG.debug("DS_MSQ_SRV: %s", df.DS_MSQ_SRV)
+
+        # logger
+        M_LOG.error("RabbitMQ error: %s, reconnect.", ls_err)
 
     # create channel
     l_chnl = l_conn.channel()
     assert l_chnl
 
     # create execWRF queue
-    l_chnl.queue_declare(queue="execWRF", durable=True)
+    l_chnl.queue_declare(queue=df.DS_MSQ_QUEUE, durable=True)
 
     # dispatch to the next worker that is not still busy
     l_chnl.basic_qos(prefetch_count=1)
 
     # create consume
-    l_chnl.basic_consume(queue="execWRF", on_message_callback=callback)  # , auto_ack=True)
+    l_chnl.basic_consume(queue=df.DS_MSQ_QUEUE, on_message_callback=callback)
 
     # logger
     M_LOG.info(" [*] Waiting for messages. To exit press CTRL+C")
@@ -142,7 +158,7 @@ if "__main__" == __name__:
                         level=df.DI_LOG_LEVEL)
 
     # disable logging
-    # logging.disable(sys.maxint)
+    # logging.disable(sys.maxsize)
 
     try:
         # run application

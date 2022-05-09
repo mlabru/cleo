@@ -154,7 +154,7 @@ def pag_frontline():
 # ---------------------------------------------------------------------------------------------
 def send_msg(fs_parm):
     """
-    send message to queue 'execWRF'
+    send message to queue 'DS_MSQ_QUEUE'
     """
     # logger
     M_LOG.debug("send_msg >>")
@@ -176,11 +176,11 @@ def send_msg(fs_parm):
     assert l_chnl
 
     # create queue
-    l_chnl.queue_declare(queue="execWRF", durable=True)
+    l_chnl.queue_declare(queue=df.DS_MSQ_QUEUE, durable=True)
 
     # exec WRF
     l_chnl.basic_publish(exchange="",
-                         routing_key="execWRF", 
+                         routing_key=df.DS_MSQ_QUEUE, 
                          body=fs_parm,
                          properties=pika.BasicProperties(
                              delivery_mode=2,  # make message persistent

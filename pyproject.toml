@@ -2,8 +2,8 @@
 name = "cleo"
 version = "0.3.0"
 description = "Cleo"
-authors = ["Milton Abrunhosa <ml_byteman@yahoo.com.br>"]
-license = "LGPL2"
+authors = ["Milton Abrunhosa <miltonmla@decea.mil.br>"]
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.9"
