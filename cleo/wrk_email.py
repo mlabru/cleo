@@ -22,7 +22,7 @@ import string
 import graypy
 
 # local
-import cls_defs as df
+import cleo.cleo_defs as df
 
 # < defines >----------------------------------------------------------------------------------
 

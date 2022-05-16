@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-cleo
+st_cleo
 
 2022/apr  1.1  mlabru  graylog log management
 2021/nov  1.0  mlabru  initial version (Linux/Python)
@@ -12,6 +12,9 @@ import datetime
 import logging
 import os
 
+# dotenv
+import dotenv
+
 # graylog
 import graypy
 
@@ -21,16 +24,13 @@ import pika
 # streamlit
 import streamlit as st
 
-# dotenv
-from dotenv import load_dotenv
-
 # local
-import cls_defs as df
+import cleo.cleo_defs as df
 
 # < environment >------------------------------------------------------------------------------
 
 # take environment variables from .env
-load_dotenv()
+dotenv.load_dotenv()
 
 # message queue user/passwd
 DS_MSQ_USR = os.getenv("DS_MSQ_USR")
@@ -73,7 +73,7 @@ def pag_openwrf():
     # na coluna 1...
     with lwd_col1:
         # data início
-        ldt_ini = st.date_input("Data Inicial (AAAA/MM/DD):")
+        ldt_ini = st.date_input("Data Inicial (AAAA/MM/DD):", min_value=datetime.date(2000, 1, 1))
         # intervalo de simulação
         li_dlt = st.selectbox("Intervalo de Simulação (horas):", [24, 48, 72])
 
@@ -167,9 +167,30 @@ def send_msg(fs_parm):
     l_parm = pika.ConnectionParameters(host=df.DS_MSQ_SRV, credentials=l_cred)
     assert l_parm
     
-    # create connection
-    l_conn = pika.BlockingConnection(l_parm)
-    assert l_conn
+    try:
+        # create connection
+        l_conn = pika.BlockingConnection(l_parm)
+        assert l_conn
+
+    # em caso de erro...
+    except lset_connect_exceptions as l_err:
+        # logger
+        M_LOG.debug("DS_MSQ_USR: %s", DS_MSQ_USR)
+        M_LOG.debug("DS_MSQ_PWD: %s", DS_MSQ_PWD)
+        M_LOG.debug("DS_MSQ_SRV: %s", df.DS_MSQ_SRV)
+
+        # logger
+        M_LOG.error("RabbitMQ error: %s, reconnect.", str(l_err))
+
+    # em caso de erro...
+    except AttributeError as l_err:
+        # logger
+        M_LOG.debug("DS_MSQ_USR: %s", DS_MSQ_USR)
+        M_LOG.debug("DS_MSQ_PWD: %s", DS_MSQ_PWD)
+        M_LOG.debug("DS_MSQ_SRV: %s", df.DS_MSQ_SRV)
+
+        # logger
+        M_LOG.error("RabbitMQ error: %s, reconnect.", str(l_err))
 
     # create channel
     l_chnl = l_conn.channel()

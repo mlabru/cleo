@@ -15,23 +15,23 @@ import pathlib
 import subprocess
 import sys
 
+# dotenv
+import dotenv
+
 # graylog
 import graypy
 
 # pika
 import pika
 
-# dotenv
-from dotenv import load_dotenv
-
 # local
-import cls_defs as df
-import wrk_email as wem
+import cleo.cleo_defs as df
+import cleo.wrk_email as wem
 
 # < environment >------------------------------------------------------------------------------
 
 # take environment variables from .env
-load_dotenv()
+dotenv.load_dotenv()
 
 # message queue user/passwd
 DS_MSQ_USR = os.getenv("DS_MSQ_USR")
@@ -70,7 +70,7 @@ def callback(f_ch, f_method, f_properties, f_body):
     :param f_body: document_me
     """
     # logger
-    M_LOG.debug("callback >>")
+    M_LOG.info("callback >>")
 
     # get parameters
     ls_parms = f_body.decode()
@@ -99,7 +99,7 @@ def main():
     drive app
     """
     # logger
-    M_LOG.debug("main >>")
+    M_LOG.info("main >>")
 
     # create credentials
     l_cred = pika.PlainCredentials(DS_MSQ_USR, DS_MSQ_PWD)
@@ -120,14 +120,24 @@ def main():
         assert l_conn
 
     # em caso de erro...
-    except lset_connect_exceptions as ls_err:
+    except lset_connect_exceptions as l_err:
         # logger
         M_LOG.debug("DS_MSQ_USR: %s", DS_MSQ_USR)
         M_LOG.debug("DS_MSQ_PWD: %s", DS_MSQ_PWD)
         M_LOG.debug("DS_MSQ_SRV: %s", df.DS_MSQ_SRV)
 
         # logger
-        M_LOG.error("RabbitMQ error: %s, reconnect.", ls_err)
+        M_LOG.error("RabbitMQ error: %s, reconnect.", str(l_err))
+
+    # em caso de erro...
+    except AttributeError as l_err:
+        # logger
+        M_LOG.debug("DS_MSQ_USR: %s", DS_MSQ_USR)
+        M_LOG.debug("DS_MSQ_PWD: %s", DS_MSQ_PWD)
+        M_LOG.debug("DS_MSQ_SRV: %s", df.DS_MSQ_SRV)
+
+        # logger
+        M_LOG.error("RabbitMQ error: %s, reconnect.", str(l_err))
 
     # create channel
     l_chnl = l_conn.channel()
