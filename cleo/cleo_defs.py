@@ -15,10 +15,6 @@ import logging
 # DI_LOG_LEVEL = logging.DEBUG
 DI_LOG_LEVEL = logging.WARNING
 
-# lista de regiões
-DLST_REGIAO_NOME = ["Norte", "Sudeste", "Brasília - mp6", "Brasília - mp10"]
-DLST_REGIAO_SIGLA = ["N", "SE", "BR6", "BR10"]
-
 # RabbitMQ server
 DS_MSQ_SRV = "localhost"
 # DS_MSQ_SRV = "172.18.30.175"

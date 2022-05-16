@@ -52,7 +52,7 @@ pika_logger.setLevel(logging.ERROR)
 # < defines >----------------------------------------------------------------------------------
 
 # source path
-DS_SRC_PATH = pathlib.Path(__file__).resolve().parent
+DS_SRC_PATH = pathlib.Path(__file__).resolve().parent.parent
 
 # execWRF batch
 DS_BASH_WRF = pathlib.PurePath(DS_SRC_PATH, "execWRF.sh")

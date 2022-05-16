@@ -27,6 +27,7 @@ import streamlit as st
 # local
 import cleo.cleo_defs as df
 import cleo.cleo_pika as pk
+import cleo.wrf_defs as wdf
 
 # < environment >------------------------------------------------------------------------------
 
@@ -66,7 +67,7 @@ def pag_openwrf():
     st.title("openWRF")
 
     # seleção da região
-    ls_reg = st.selectbox("Região:", df.DLST_REGIAO_NOME)
+    ls_reg = st.selectbox("Região:", wdf.DLST_REGIAO_NOME)
 
     # cria 2 colunas
     lwd_col1, lwd_col2 = st.columns(2)
@@ -89,7 +90,7 @@ def pag_openwrf():
     # gera parâmetros
     ls_parm = (f"{ldt_ini.year:04d} {ldt_ini.month:02d} "
                f"{ldt_ini.day:02d} {ls_hora_ini} {li_dlt:02d} "
-               f"{df.DLST_REGIAO_SIGLA[df.DLST_REGIAO_NOME.index(ls_reg)]} "
+               f"{wdf.DLST_REGIAO_SIGLA[wdf.DLST_REGIAO_NOME.index(ls_reg)]} "
                f"{ls_email}")
 
     # e-mail ok ?
