@@ -21,12 +21,10 @@ import dotenv
 # graylog
 import graypy
 
-# pika
-import pika
-
 # local
 import cleo.cleo_defs as df
-import cleo.wrk_email as wem
+import cleo.cleo_pika as pk
+# import cleo.wrk_email as wem
 
 # < environment >------------------------------------------------------------------------------
 
@@ -69,6 +67,8 @@ def callback(f_ch, f_method, f_properties, f_body):
     :param f_properties: document_me
     :param f_body: document_me
     """
+    # pylint: disable=unused-argument
+
     # logger
     M_LOG.info("callback >>")
 
@@ -76,16 +76,17 @@ def callback(f_ch, f_method, f_properties, f_body):
     ls_parms = f_body.decode()
 
     # logger
-    M_LOG.info(" [x] Received %r" % ls_parms)
+    M_LOG.info(" [x] Received %s", ls_parms)
 
     # strip parameters
-    llst_parms = ls_parms.split()
+    # llst_parms = ls_parms.split()
 
     # token
-    ls_token = "".join(llst_parms[:-1])
+    # ls_token = "".join(llst_parms[:-1])
 
     # exec WRF
-    ls_log = subprocess.run(["bash", DS_BASH_WRF, ls_parms], capture_output=True)
+    # ls_log =
+    subprocess.run(["bash", DS_BASH_WRF, ls_parms], capture_output=True, check=True)
 
     # send confirmation e-mail
     # wem.send_email(llst_parms[-1].strip(), ls_token, False)
@@ -101,50 +102,9 @@ def main():
     # logger
     M_LOG.info("main >>")
 
-    # create credentials
-    l_cred = pika.PlainCredentials(DS_MSQ_USR, DS_MSQ_PWD)
-    assert l_cred
-
-    # create parameters
-    l_parm = pika.ConnectionParameters(host=df.DS_MSQ_SRV, credentials=l_cred)
-    assert l_parm
-
-    # RabbitMQ connection exceptions
-    lset_connect_exceptions = (pika.exceptions.ConnectionClosed,
-                               pika.exceptions.AMQPConnectionError,
-                               pika.exceptions.IncompatibleProtocolError)
-    
-    try:
-        # create connection
-        l_conn = pika.BlockingConnection(l_parm)
-        assert l_conn
-
-    # em caso de erro...
-    except lset_connect_exceptions as l_err:
-        # logger
-        M_LOG.debug("DS_MSQ_USR: %s", DS_MSQ_USR)
-        M_LOG.debug("DS_MSQ_PWD: %s", DS_MSQ_PWD)
-        M_LOG.debug("DS_MSQ_SRV: %s", df.DS_MSQ_SRV)
-
-        # logger
-        M_LOG.error("RabbitMQ error: %s, reconnect.", str(l_err))
-
-    # em caso de erro...
-    except AttributeError as l_err:
-        # logger
-        M_LOG.debug("DS_MSQ_USR: %s", DS_MSQ_USR)
-        M_LOG.debug("DS_MSQ_PWD: %s", DS_MSQ_PWD)
-        M_LOG.debug("DS_MSQ_SRV: %s", df.DS_MSQ_SRV)
-
-        # logger
-        M_LOG.error("RabbitMQ error: %s, reconnect.", str(l_err))
-
     # create channel
-    l_chnl = l_conn.channel()
+    _, l_chnl = pk.create_channel()
     assert l_chnl
-
-    # create execWRF queue
-    l_chnl.queue_declare(queue=df.DS_MSQ_QUEUE, durable=True)
 
     # dispatch to the next worker that is not still busy
     l_chnl.basic_qos(prefetch_count=1)
@@ -179,14 +139,7 @@ if "__main__" == __name__:
         # logger
         logging.warning("Interrupted.")
 
-        try:
-            # terminate
-            sys.exit(0)
-
-        # em caso de erro...
-        except SystemExit:
-            # quit
-            os._exit(0)
+        # terminate
+        sys.exit(0)
 
 # < the end >----------------------------------------------------------------------------------
-            

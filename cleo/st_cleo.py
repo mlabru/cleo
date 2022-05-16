@@ -26,6 +26,7 @@ import streamlit as st
 
 # local
 import cleo.cleo_defs as df
+import cleo.cleo_pika as pk
 
 # < environment >------------------------------------------------------------------------------
 
@@ -60,7 +61,7 @@ def pag_openwrf():
 
     # top image
     st.image("wrfmodel.jpg")
-    
+
     # título da página
     st.title("openWRF")
 
@@ -86,10 +87,10 @@ def pag_openwrf():
     ls_email = st.text_input("E-mail para onde será enviado o arquivo de saída:")
 
     # gera parâmetros
-    ls_parm = "{:04d} {:02d} {:02d} {} {:02d} {} {}".format(
-              ldt_ini.year, ldt_ini.month, ldt_ini.day, ls_hora_ini, li_dlt, 
-              df.DLST_REGIAO_SIGLA[df.DLST_REGIAO_NOME.index(ls_reg)],
-              ls_email)
+    ls_parm = (f"{ldt_ini.year:04d} {ldt_ini.month:02d} "
+               f"{ldt_ini.day:02d} {ls_hora_ini} {li_dlt:02d} "
+               f"{df.DLST_REGIAO_SIGLA[df.DLST_REGIAO_NOME.index(ls_reg)]} "
+               f"{ls_email}")
 
     # e-mail ok ?
     if not ls_email:
@@ -100,14 +101,14 @@ def pag_openwrf():
     lv_ok = ls_email
 
     # submit button
-    lv_submit = st.button("Gerar previsão", 
-                          on_click=send_msg, 
+    lv_submit = st.button("Gerar previsão",
+                          on_click=send_msg,
                           args=(ls_parm,)) if lv_ok else False
 
     if lv_submit:
         # ok
-        st.success("O job foi eviado para execução.\n" \
-                   "Um link para o resultado ou uma mensagem de erro retornará no e-mail" \
+        st.success("O job foi eviado para execução.\n"
+                   "Um link para o resultado ou uma mensagem de erro retornará no e-mail"
                    " selecionado em algumas horas.\n" "Obrigado.")
 
 # ---------------------------------------------------------------------------------------------
@@ -138,12 +139,12 @@ def pag_frontline():
         # hora final
         ltm_fin = st.time_input("Hora Final (HH/MM):")
 
-    x = st.slider("x")
-    st.write(x, "squared is", x * x)
+    lix = st.slider("x")
+    st.write(lix, "squared is", lix * lix)
 
     # submit button
     lv_submit = st.button("Submit")
-    
+
     if lv_submit:
         print("lv_submit:", lv_submit, type(lv_submit))
         print("ldt_ini:", ldt_ini, type(ldt_ini))
@@ -159,56 +160,20 @@ def send_msg(fs_parm):
     # logger
     M_LOG.debug("send_msg >>")
 
-    # create credentials
-    l_cred = pika.PlainCredentials(DS_MSQ_USR, DS_MSQ_PWD)
-    assert l_cred
-
-    # create parameters
-    l_parm = pika.ConnectionParameters(host=df.DS_MSQ_SRV, credentials=l_cred)
-    assert l_parm
-    
-    try:
-        # create connection
-        l_conn = pika.BlockingConnection(l_parm)
-        assert l_conn
-
-    # em caso de erro...
-    except lset_connect_exceptions as l_err:
-        # logger
-        M_LOG.debug("DS_MSQ_USR: %s", DS_MSQ_USR)
-        M_LOG.debug("DS_MSQ_PWD: %s", DS_MSQ_PWD)
-        M_LOG.debug("DS_MSQ_SRV: %s", df.DS_MSQ_SRV)
-
-        # logger
-        M_LOG.error("RabbitMQ error: %s, reconnect.", str(l_err))
-
-    # em caso de erro...
-    except AttributeError as l_err:
-        # logger
-        M_LOG.debug("DS_MSQ_USR: %s", DS_MSQ_USR)
-        M_LOG.debug("DS_MSQ_PWD: %s", DS_MSQ_PWD)
-        M_LOG.debug("DS_MSQ_SRV: %s", df.DS_MSQ_SRV)
-
-        # logger
-        M_LOG.error("RabbitMQ error: %s, reconnect.", str(l_err))
-
     # create channel
-    l_chnl = l_conn.channel()
+    l_conn, l_chnl = pk.create_channel()
+    assert l_conn
     assert l_chnl
-
-    # create queue
-    l_chnl.queue_declare(queue=df.DS_MSQ_QUEUE, durable=True)
 
     # exec WRF
     l_chnl.basic_publish(exchange="",
-                         routing_key=df.DS_MSQ_QUEUE, 
+                         routing_key=df.DS_MSQ_QUEUE,
                          body=fs_parm,
                          properties=pika.BasicProperties(
-                             delivery_mode=2,  # make message persistent
-                        ))
+                             delivery_mode=2))  # make message persistent
 
     # logger
-    M_LOG.info(" [x] Sent '{}'".format(fs_parm))
+    M_LOG.info(" [x] Sent '%s'", fs_parm)
 
     # close connection
     l_conn.close()
@@ -230,21 +195,21 @@ def main():
     if "openWRF" == ls_pg_sel:
         # call WRF page
         pag_openwrf()
-        
+
     # frontline ?
     elif "Frontline" == ls_pg_sel:
         # call frontline page
         pag_frontline()
-        
+
 # ---------------------------------------------------------------------------------------------
 # this is the bootstrap process
-        
+
 if "__main__" == __name__:
     # logger
     logging.basicConfig(datefmt="%d/%m/%Y %H:%M",
                         format="%(asctime)s %(message)s",
                         level=df.DI_LOG_LEVEL)
- 
+
     # disable logging
     # logging.disable(sys.maxint)
 

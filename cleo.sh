@@ -27,7 +27,7 @@ if ! [ "$( docker container inspect -f '{{.State.Running}}' rabbitmq )" == "true
 fi
 
 # ckeck if another instance of worker is running
-DI_PID_WORKER=`ps ax | grep -w python | grep -w worker.py | awk '{ print $1 }'`
+DI_PID_WORKER=`ps ax | grep -w python3 | grep -w worker.py | awk '{ print $1 }'`
 
 if [ ! -z "$DI_PID_WORKER" ]; then
     # log warning
