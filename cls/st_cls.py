@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-st_cleo
+st_cls
 
 2022.jun  mlabru  remove rabbitmq cause of timeout problems, remove graylog
 2022.may  mlabru  rabbitmq connection timeout
@@ -13,7 +13,6 @@ st_cleo
 import datetime
 import json
 import logging
-import os
 import pathlib
 import sys
 import time
@@ -22,8 +21,8 @@ import time
 import streamlit as st
 
 # local
-import cleo.cleo_defs as df
-import cleo.wrf_defs as wdf
+import cls.cls_defs as df
+import cls.wrf_defs as wdf
 
 # < logging >----------------------------------------------------------------------------------
 
@@ -108,7 +107,7 @@ def gera_job(fdct_parm: dict):
     li_now = int(time.time())
 
     # param filename
-    ls_fname = pathlib.PurePath(df.DS_DIR_JOBS, f"{li_now}.json")
+    ls_fname = pathlib.PurePath(wdf.DS_DIR_JOBS, f"{li_now}.json")
 
     # open param file
     with open(ls_fname, 'w') as lfh_out:

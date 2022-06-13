@@ -1,5 +1,5 @@
 
-from cleo import worker as wk
+from cls import worker as wk
 
 # content of test_sample.py
 def inc(x):
