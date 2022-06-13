@@ -1,0 +1,8 @@
+    try:
+        # message acknowledgment
+        # f_ch.basic_ack(delivery_tag=f_method.delivery_tag)
+
+    # em caso de erro...
+    except Exception as lerr:
+        # logger
+        M_LOG.error("execWRF abortou on basic_ack (2): %s", str(lerr))

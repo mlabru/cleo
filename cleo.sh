@@ -18,14 +18,6 @@ if [ -d ${CLSIM} ]; then
     cd ${CLSIM}
 fi
 
-# rabbitMQ container not loaded ?
-if ! [ "$( docker container inspect -f '{{.State.Running}}' rabbitmq )" == "true" ]; then
-    # upload rabbitmq
-    docker-compose up -d &
-    # wait 15s
-    sleep 15s
-fi
-
 # ckeck if another instance of worker is running
 DI_PID_WORKER=`ps ax | grep -w python3 | grep -w worker.py | awk '{ print $1 }'`
 
@@ -44,7 +36,7 @@ export PYTHONPATH="$PWD/."
 # log warning
 echo "[`date`]: starting process worker..."
 # executa o worker (message queue consumer)
-python3 cleo/worker.py > logs/worker.$HOST.$TDATE.log 2>&1 &
+# python3 cleo/worker.py > logs/worker.$HOST.$TDATE.log 2>&1 &
 
 # ckeck if another instance os cleo is running
 DI_PID_CLEO=`ps ax | grep -w streamlit | grep -w st_cleo.py | awk '{ print $1 }'`
