@@ -3,37 +3,27 @@
 worker
 work queue consumer
 
-2022/apr  1.1  mlabru  graylog log management
-2021/nov  1.0  mlabru  initial version (Linux/Python)
+2022.jun  mlabru  remove rabbitmq cause of timeout problems, remove graylog
+2022.may  mlabru  melhorias no try...except
+2022.apr  mlabru  graylog log management
+2021.nov  mlabru  initial version (Linux/Python)
 """
 # < imports >----------------------------------------------------------------------------------
 
 # python library
+import glob
+import json
 import logging
 import os
 import pathlib
 import subprocess
 import sys
-
-# dotenv
-import dotenv
-
-# graylog
-import graypy
+import time
 
 # local
 import cleo.cleo_defs as df
-import cleo.cleo_pika as pk
+import cleo.wrf_defs as wdf
 # import cleo.wrk_email as wem
-
-# < environment >------------------------------------------------------------------------------
-
-# take environment variables from .env
-dotenv.load_dotenv()
-
-# message queue user/passwd
-DS_MSQ_USR = os.getenv("DS_MSQ_USR")
-DS_MSQ_PWD = os.getenv("DS_MSQ_PWD")
 
 # < logging >----------------------------------------------------------------------------------
 
@@ -41,58 +31,62 @@ DS_MSQ_PWD = os.getenv("DS_MSQ_PWD")
 M_LOG = logging.getLogger(__name__)
 M_LOG.setLevel(df.DI_LOG_LEVEL)
 
-# graylog handler
-M_GLH = graypy.GELFUDPHandler("localhost", 12201)
-M_LOG.addHandler(M_GLH)
-
-# pika logger
-pika_logger = logging.getLogger("pika")
-pika_logger.setLevel(logging.ERROR)
-
-# < defines >----------------------------------------------------------------------------------
-
-# source path
-DS_SRC_PATH = pathlib.Path(__file__).resolve().parent.parent
-
-# execWRF batch
-DS_BASH_WRF = pathlib.PurePath(DS_SRC_PATH, "execWRF.sh")
-
 # ---------------------------------------------------------------------------------------------
-def callback(f_ch, f_method, f_properties, f_body):
+def exec_job(fs_config: pathlib.Path):
     """
-    process messages callback
+    process messages
 
-    :param f_ch: document_me
-    :param f_method: document_me
-    :param f_properties: document_me
-    :param f_body: document_me
+    :param fs_config: job config file
     """
-    # pylint: disable=unused-argument
-
     # logger
-    M_LOG.info("callback >>")
+    M_LOG.info("exec_job >>")
 
-    # get parameters
-    ls_parms = f_body.decode()
+    # parâmetros do job
+    ldct_parms = {}
 
-    # logger
-    M_LOG.info(" [x] Received %s", ls_parms)
+    # load JSON config file
+    with open(fs_config, 'r') as fhd:
+        # get parameters
+        ldct_parms = json.load(fhd)
 
-    # strip parameters
-    # llst_parms = ls_parms.split()
+    # build dos parâmetros de entrada
+    # ex: <AAAA> <MM> <DD> <INÍCIO> <TEMPO> <REGIÃO> [E-MAIL]
+    ls_parms = "{} {:02d} {:02d} {} {:02d} {} {}".format(ldct_parms["year"],
+                                                         ldct_parms["month"],
+                                                         ldct_parms["day"],
+                                                         ldct_parms["hora"],
+                                                         ldct_parms["delta"],
+                                                         ldct_parms["regiao"],
+                                                         ldct_parms["email"])
 
-    # token
-    # ls_token = "".join(llst_parms[:-1])
+    try:
+        # exec WRF
+        # subprocess.run(["bash", wdf.DS_BASH_WRF, ls_parms], capture_output=True, check=True)
+        M_LOG.debug("subprocess.run: %s", str(["bash", str(wdf.DS_BASH_WRF), ls_parms]))
 
-    # exec WRF
-    # ls_log =
-    subprocess.run(["bash", DS_BASH_WRF, ls_parms], capture_output=True, check=True)
+        # send confirmation e-mail
+        # wem.send_email(llst_parms[-1].strip(), ls_token, False)
 
-    # send confirmation e-mail
-    # wem.send_email(llst_parms[-1].strip(), ls_token, False)
+        # remove token
+        pathlib.Path.unlink(pathlib.Path(fs_config))
 
-    # message acknowledgment
-    f_ch.basic_ack(delivery_tag=f_method.delivery_tag)
+    # em caso de erro...
+    except subprocess.CalledProcessError as lerr:
+        # logger
+        M_LOG.error("execWRF abortou on subprocess.run (1): %s", str(lerr.output.decode()))
+    
+        # TODO:
+        # enviar mail com aviso de erro para o usuário.
+        # wem.send_email(llst_parms[-1].strip(), ls_token, False)
+
+    # em caso de erro...
+    except Exception as lerr:
+        # logger
+        M_LOG.error("execWRF abortou on subprocess.run (2): %s", str(lerr))
+
+        # TODO:
+        # enviar mail com aviso de erro para o usuário.
+        # wem.send_email(llst_parms[-1].strip(), ls_token, False)
 
 # ---------------------------------------------------------------------------------------------
 def main():
@@ -102,28 +96,35 @@ def main():
     # logger
     M_LOG.info("main >>")
 
-    # create channel
-    _, l_chnl = pk.create_channel()
-    assert l_chnl
-
-    # dispatch to the next worker that is not still busy
-    l_chnl.basic_qos(prefetch_count=1)
-
-    # create consume
-    l_chnl.basic_consume(queue=df.DS_MSQ_QUEUE, on_message_callback=callback)
-
     # logger
     M_LOG.info(" [*] Waiting for messages. To exit press CTRL+C")
 
-    # start consuming
-    l_chnl.start_consuming()
+    # forever...
+    while True:
+        # list of all files in directory sorted by name
+        llst_files = glob.glob(os.path.join(df.DS_DIR_JOBS, "*.json"))
+        # list of all files in directory sorted by name
+        llst_files = sorted(filter(os.path.isfile, llst_files))
+              
+        # tem jobs na fila ?
+        if llst_files:
+            # logger
+            M_LOG.info(" [x] Received %s", str(llst_files[0]))
 
+            # process job
+            exec_job(llst_files[0])
+
+        # senão,...
+        else: 
+            # allows task switch
+            time.sleep(30)
+        
 # ---------------------------------------------------------------------------------------------
 # this is the bootstrap process
 
 if "__main__" == __name__:
     # logger
-    logging.basicConfig(datefmt="%d/%m/%Y %H:%M",
+    logging.basicConfig(datefmt="%Y/%m/%d %H:%M",
                         format="%(asctime)s %(message)s",
                         level=df.DI_LOG_LEVEL)
 
@@ -139,7 +140,7 @@ if "__main__" == __name__:
         # logger
         logging.warning("Interrupted.")
 
-        # terminate
-        sys.exit(0)
+    # terminate
+    sys.exit(0)
 
 # < the end >----------------------------------------------------------------------------------

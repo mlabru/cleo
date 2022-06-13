@@ -8,19 +8,26 @@ cleo_defs
 
 # python library
 import logging
+import pathlib
+
+# dotenv
+import dotenv
+
+# < environment >------------------------------------------------------------------------------
+
+# take environment variables from .env
+dotenv.load_dotenv()
 
 # < defines >----------------------------------------------------------------------------------
 
 # logging level
-# DI_LOG_LEVEL = logging.DEBUG
-DI_LOG_LEVEL = logging.WARNING
+DI_LOG_LEVEL = logging.DEBUG
 
-# RabbitMQ server
-DS_MSQ_SRV = "localhost"
-# DS_MSQ_SRV = "172.18.30.175"
+# source path
+DS_SRC_PATH = pathlib.Path(__file__).resolve().parent.parent
 
-# RabbitMQ queue
-DS_MSQ_QUEUE = "execWRF"
+# jobs directory
+DS_DIR_JOBS = pathlib.PurePath(DS_SRC_PATH, "jobs")
 
 # simulation result upload
 DV_RESULT_UPLOAD = False
