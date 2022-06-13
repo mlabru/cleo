@@ -11,6 +11,7 @@ work queue consumer
 # < imports >----------------------------------------------------------------------------------
 
 # python library
+import email
 import glob
 import json
 import logging
@@ -59,14 +60,15 @@ def exec_job(fs_config: pathlib.Path):
                                                          ldct_parms["regiao"],
                                                          ldct_parms["email"])
 
-    # build token
-    # ex: 201204110048BR6.tgz
-    ls_token = "{}{:02d}{:02d}{}{:02d}{}.tgz".format(ldct_parms["year"],
-                                                     ldct_parms["month"],
-                                                     ldct_parms["day"],
-                                                     ldct_parms["hora"],
-                                                     ldct_parms["delta"],
-                                                     ldct_parms["regiao"])
+    # build link
+    # ex: ftp://<user>:<pass>@<host>:<port>/<dir>/201204110048BR6.tgz
+    ls_link = "{}{}{:02d}{:02d}{}{:02d}{}.tgz".format(wdf.DS_FTP_URL,
+                                                      ldct_parms["year"],
+                                                      ldct_parms["month"],
+                                                      ldct_parms["day"],
+                                                      ldct_parms["hora"],
+                                                      ldct_parms["delta"],
+                                                      ldct_parms["regiao"])
 
     # exec WRF process
     try:
@@ -74,13 +76,19 @@ def exec_job(fs_config: pathlib.Path):
         # subprocess.run(["bash", wdf.DS_BASH_WRF, ls_parms], capture_output=True, check=True)
         M_LOG.debug("subprocess.run: %s", str(["bash", str(wdf.DS_BASH_WRF), ls_parms]))
 
+        # create e-mail message
+        l_email = email.message.EmailMessage()
+
         # build e-mail message
-        ls_body = wdf.DS_EMAIL_BODY_OK.substitute(xfrom=wdf.DS_EMAIL_FROM,
-                                                  xto=ldct_parms["email"].strip(),
-                                                  xlink=ls_token)
+        l_email["from"] = wdf.DS_EMAIL_FROM
+        l_email["to"] = ldct_parms["email"].strip()
+        l_email["subject"] = "CLSim - Resultado da Simulação"
+
+        # build e-mail body
+        l_email.set_content(wdf.DS_EMAIL_BODY_OK.substitute(xlink=ls_link))
 
         # send confirmation e-mail
-        wem.send_message(ldct_parms["email"].strip(), ls_body)
+        wem.send_message(ldct_parms["email"].strip(), l_email.as_string())
 
         # remove token
         pathlib.Path.unlink(pathlib.Path(fs_config))
@@ -90,28 +98,40 @@ def exec_job(fs_config: pathlib.Path):
         # logger
         M_LOG.error("execWRF abortou on subprocess.run (1): %s", str(lerr.output.decode()))
 
+        # create e-mail message
+        l_email = email.message.EmailMessage()
+
         # build e-mail message
-        ls_body = wdf.DS_EMAIL_BODY_ERR.substitute(xfrom="ml_sjc@yahoo.com.br",
-                                                   xto=wdf.DS_EMAIL_FROM,
-                                                   xtok=ls_token,
-                                                   xmsg=lerr.output.decode())
+        l_email["from"] = wdf.DS_EMAIL_FROM
+        l_email["to"] = wdf.DS_EMAIL_FROM
+        l_email["subject"] = "CLSim - Erro na Simulação"
+
+        # build e-mail body
+        l_email.set_content(wdf.DS_EMAIL_BODY_OK.substitute(xlink=ls_link,
+                                                            xmsg=lerr.output.decode()))
 
         # enviar mail com aviso de erro para o usuário
-        wem.send_message(wdf.DS_EMAIL_FROM, ls_body)
+        wem.send_message(wdf.DS_EMAIL_FROM, l_email.as_string())
 
     # em caso de erro...
     except Exception as lerr:
         # logger
         M_LOG.error("execWRF abortou on subprocess.run (2): %s", str(lerr))
 
+        # create e-mail message
+        l_email = email.message.EmailMessage()
+
         # build e-mail message
-        ls_body = wdf.DS_EMAIL_BODY_ERR.substitute(xfrom="ml_sjc@yahoo.com.br",
-                                                   xto="ml.abru@gmail.com",
-                                                   xtok=ls_token,
-                                                   xmsg=str(lerr))
+        l_email["from"] = wdf.DS_EMAIL_FROM
+        l_email["to"] = wdf.DS_EMAIL_ADMIN
+        l_email["subject"] = "CLSim - Erro na Simulação"
+
+        # build e-mail body
+        l_email.set_content(wdf.DS_EMAIL_BODY_OK.substitute(xlink=ls_link,
+                                                            xmsg=str(lerr)))
 
         # enviar mail com aviso de erro para o usuário
-        wem.send_message("ml.abru@gmail.com", ls_body)
+        wem.send_message(wdf.DS_EMAIL_ADMIN, l_email.as_string())
 
 # ---------------------------------------------------------------------------------------------
 def main():

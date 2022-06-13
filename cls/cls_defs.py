@@ -20,6 +20,6 @@ dotenv.load_dotenv()
 # < defines >----------------------------------------------------------------------------------
 
 # logging level
-DI_LOG_LEVEL = logging.DEBUG
+DI_LOG_LEVEL = logging.WARNING
 
 # < the end >----------------------------------------------------------------------------------
