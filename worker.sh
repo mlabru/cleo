@@ -24,5 +24,8 @@ if ! [ "$( docker container inspect -f '{{.State.Running}}' rabbitmq )" == "true
     sudo docker-compose up -d &
 fi
 
+# set PYTHONPATH
+export PYTHONPATH="$PWD/."
+
 # executa a aplicação (-OO)
 python3 cleo/worker.py > logs/worker.$HOST.$TDATE.log 2>&1 &

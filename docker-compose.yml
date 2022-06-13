@@ -3,7 +3,7 @@ version: "3.2"
 services:
   # RabbitMQ
   rabbitmq:
-    image: rabbitmq:3.10.0-rc.1-management
+    image: rabbitmq:3.10
     container_name: 'rabbitmq'
     restart: always
     ports:
@@ -88,4 +88,3 @@ volumes:
     driver: local
   graylog_data:
     driver: local
-    
