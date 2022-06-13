@@ -42,7 +42,7 @@ def send_message(fs_to: str, fs_message: str):
         M_LOG.debug("connection object: %s", str(l_server))
 
         # set debug level
-        # l_server.set_debuglevel(True)
+        l_server.set_debuglevel(False)
 
     # em caso de erro,...
     except Exception as lerr:
@@ -60,7 +60,8 @@ def send_message(fs_to: str, fs_message: str):
     M_LOG.debug("response: %s", str(l_response.decode()))
 
     # send message
-    # l_server.sendmail(wdf.DS_SMTP_USR, [fs_to], fs_message)
+    l_server.sendmail(wdf.DS_SMTP_USR, [fs_to], fs_message)
+    
     M_LOG.debug("send to: %s", str([fs_to]))
     M_LOG.debug("sendmail: %s", str(fs_message))
 
@@ -73,5 +74,14 @@ def send_message(fs_to: str, fs_message: str):
     # logger
     M_LOG.debug("response code: %s", str(l_resp_code))
     M_LOG.debug("response: %s", str(l_response.decode()))
+
+# ---------------------------------------------------------------------------------------------
+# this is the bootstrap process
+        
+if "__main__" == __name__:
+    # logger
+    logging.basicConfig(datefmt="%Y-%m-%d %H:%M",
+                        format="%(asctime)s %(message)s",
+                        level=logging.DEBUG)
 
 # < the end >----------------------------------------------------------------------------------
