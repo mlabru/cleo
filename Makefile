@@ -1,6 +1,6 @@
 ###
 # target systems
-TARGET_SYS = ./cleo
+TARGET_SYS = ./cls
 
 ###
 # config
