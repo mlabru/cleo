@@ -8,6 +8,7 @@ send message to a list of users
 # < imports >----------------------------------------------------------------------------------
 
 # python library
+import email
 import logging
 import smtplib
 
@@ -48,6 +49,8 @@ def send_message(fs_to: str, fs_message: str):
     except Exception as lerr:
         # logger
         M_LOG.error("error on email service: %s", lerr, exc_info=1)
+        # cai fora
+        return
 
     # logger
     M_LOG.debug("logging in.....")
@@ -83,5 +86,21 @@ if "__main__" == __name__:
     logging.basicConfig(datefmt="%Y-%m-%d %H:%M",
                         format="%(asctime)s %(message)s",
                         level=logging.DEBUG)
+
+    # create e-mail message
+    l_email = email.message.EmailMessage()
+
+    # build e-mail message
+    l_email["from"] = wdf.DS_EMAIL_FROM
+    l_email["to"] = wdf.DS_EMAIL_FROM
+    l_email["subject"] = "CLSim - Teste de e-mail"
+
+    # build e-mail body
+    l_email.set_content(wdf.DS_EMAIL_BODY_ERR.substitute(xtok="Teste",
+                                                         xmsg="Mensagem teste"))
+    print(l_email)
+
+    # send message
+    send_message("ml.abru@gmail.com", l_email.as_string())
 
 # < the end >----------------------------------------------------------------------------------

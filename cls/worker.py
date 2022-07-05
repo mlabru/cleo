@@ -61,7 +61,7 @@ def exec_job(fs_config: pathlib.Path):
                                                          ldct_parms["email"])
 
     # build link
-    # ex: ftp://<user>:<pass>@<host>:<port>/<dir>/201204110048BR6.tgz
+    # ex: http://<host>:<port>/shared/clsim/201204110048BR6.tgz
     ls_link = "{}{}{:02d}{:02d}{}{:02d}{}.tgz".format(wdf.DS_FTP_URL,
                                                       ldct_parms["year"],
                                                       ldct_parms["month"],
@@ -72,9 +72,11 @@ def exec_job(fs_config: pathlib.Path):
 
     # exec WRF process
     try:
-        # exec WRF
-        # subprocess.run(["bash", wdf.DS_BASH_WRF, ls_parms], capture_output=True, check=True)
+        # logger
         M_LOG.debug("subprocess.run: %s", str(["bash", str(wdf.DS_BASH_WRF), ls_parms]))
+
+        # exec WRF
+        subprocess.run(["bash", str(wdf.DS_BASH_WRF), ls_parms], capture_output=True, check=True)
 
         # create e-mail message
         l_email = email.message.EmailMessage()
@@ -107,8 +109,8 @@ def exec_job(fs_config: pathlib.Path):
         l_email["subject"] = "CLSim - Erro na Simulação"
 
         # build e-mail body
-        l_email.set_content(wdf.DS_EMAIL_BODY_OK.substitute(xlink=ls_link,
-                                                            xmsg=lerr.output.decode()))
+        l_email.set_content(wdf.DS_EMAIL_BODY_ERR.substitute(xtok=ls_parms,
+                                                             xmsg=lerr.output.decode()))
 
         # enviar mail com aviso de erro para o usuário
         wem.send_message(wdf.DS_EMAIL_FROM, l_email.as_string())
@@ -127,8 +129,8 @@ def exec_job(fs_config: pathlib.Path):
         l_email["subject"] = "CLSim - Erro na Simulação"
 
         # build e-mail body
-        l_email.set_content(wdf.DS_EMAIL_BODY_OK.substitute(xlink=ls_link,
-                                                            xmsg=str(lerr)))
+        l_email.set_content(wdf.DS_EMAIL_BODY_ERR.substitute(xtok=ls_parms,
+                                                             xmsg=str(lerr)))
 
         # enviar mail com aviso de erro para o usuário
         wem.send_message(wdf.DS_EMAIL_ADMIN, l_email.as_string())
@@ -139,16 +141,16 @@ def main():
     drive app
     """
     # logger
-    M_LOG.info("main >>")
+    M_LOG.info(">> main")
 
     # logger
     M_LOG.info(" [*] Waiting for messages. To exit press CTRL+C")
 
     # forever...
     while True:
-        # list of all files in directory sorted by name
+        # list of all files (json) in directory
         llst_files = glob.glob(os.path.join(wdf.DS_DIR_JOBS, "*.json"))
-        # list of all files in directory sorted by name
+        # list of all files (json) in directory sorted by name
         llst_files = sorted(filter(os.path.isfile, llst_files))
 
         # tem jobs na fila ?
