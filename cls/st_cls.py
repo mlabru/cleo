@@ -144,7 +144,16 @@ if "__main__" == __name__:
     # disable logging
     # logging.disable(sys.maxint)
 
-    # run application
-    main()
+    try:
+        # run application
+        main()
+    
+    # em caso de erro...
+    except KeyboardInterrupt:
+        # logger
+        logging.warning("Interrupted.")
+            
+    # terminate
+    sys.exit(0)
 
 # < the end >----------------------------------------------------------------------------------

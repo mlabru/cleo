@@ -54,6 +54,7 @@ DS_EMAIL_ADMIN = os.getenv("DS_EMAIL_ADMIN")
 # email message template
 DS_EMAIL_BODY_OK = string.Template("""
 Segue o link com o resultado da simulação:
+
 $xlink.
 
 Este arquivo estará disponível por 7 dias a contar da data de envio deste e-mail.
@@ -67,11 +68,12 @@ ou similar.
 # email error message template
 DS_EMAIL_BODY_ERR = string.Template("""
 Ocorreu o seguite erro na simulação ($xtok):
+
 $xmsg.
 """)
 
 # FTP download URL
-DS_FTP_URL = f"ftp://{DS_FTP_USER}:{DS_FTP_PASS}@{DS_FTP_HOST}:{DI_FTP_PORT}/"
+DS_FTP_URL = f"http://{DS_FTP_HOST}:{DI_FTP_PORT}/shared/clsim/"
 
 # source path
 DS_SRC_PATH = pathlib.Path(__file__).resolve().parent.parent
