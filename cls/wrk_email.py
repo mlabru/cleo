@@ -11,6 +11,7 @@ send message to a list of users
 import email
 import logging
 import smtplib
+import ssl
 
 # local
 import cls.cls_defs as df
@@ -33,10 +34,14 @@ def send_message(fs_to: str, fs_message: str):
     # logger
     M_LOG.info(">> send_message")
 
+    # create a secure SSL context
+    l_context = ssl.create_default_context()
+
     # try to log in to server and send email
     try:
         # access server
-        l_server = smtplib.SMTP_SSL(host=wdf.DS_SMTP_SERVER, port=wdf.DI_SMTP_SSL_PORT)
+        # l_server = smtplib.SMTP_SSL(host=wdf.DS_SMTP_SERVER, port=wdf.DI_SMTP_SSL_PORT)
+        l_server = smtplib.SMTP(host=wdf.DS_SMTP_SERVER, port=wdf.DI_SMTP_PORT)
         assert l_server
 
         # logger
@@ -45,10 +50,20 @@ def send_message(fs_to: str, fs_message: str):
         # set debug level
         l_server.set_debuglevel(False)
 
+        # server handshake
+        # l_server.ehlo()  # can be omitted
+
+        # secure the connection
+        l_server.starttls(context=l_context)
+
+        # server handshake
+        # l_server.ehlo()  # can be omitted
+
     # em caso de erro,...
     except Exception as lerr:
         # logger
         M_LOG.error("error on email service: %s", lerr, exc_info=1)
+        M_LOG.error("ref: %s", str(fs_message), exc_info=1)
         # cai fora
         return
 
@@ -56,7 +71,7 @@ def send_message(fs_to: str, fs_message: str):
     M_LOG.debug("logging in.....")
 
     # try to log in to server and send email
-    l_resp_code, l_response = l_server.login(wdf.DS_SMTP_USR, wdf.DS_SMTP_APP_PWD)
+    l_resp_code, l_response = l_server.login(wdf.DS_SMTP_USR, wdf.DS_SMTP_PWD)
 
     # logger
     M_LOG.debug("response code: %s", str(l_resp_code))
@@ -92,7 +107,7 @@ if "__main__" == __name__:
 
     # build e-mail message
     l_email["from"] = wdf.DS_EMAIL_FROM
-    l_email["to"] = wdf.DS_EMAIL_FROM
+    l_email["to"] = wdf.DS_EMAIL_DEVL
     l_email["subject"] = "CLSim - Teste de e-mail"
 
     # build e-mail body

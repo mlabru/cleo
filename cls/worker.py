@@ -87,53 +87,81 @@ def exec_job(fs_config: pathlib.Path):
         l_email["subject"] = "CLSim - Resultado da Simulação"
 
         # build e-mail body
-        l_email.set_content(wdf.DS_EMAIL_BODY_OK.substitute(xlink=ls_link))
+        l_email.set_content(wdf.DS_EMAIL_BODY_OK.substitute(xtok=ls_parms,
+                                                            xlink=ls_link))
 
-        # send confirmation e-mail
+        # send confirmation e-mail para o usuário
         wem.send_message(ldct_parms["email"].strip(), l_email.as_string())
 
-        # remove token
+        # remove token da fila
         pathlib.Path.unlink(pathlib.Path(fs_config))
 
     # em caso de erro...
     except subprocess.CalledProcessError as lerr:
         # logger
-        M_LOG.error("execWRF abortou on subprocess.run (1): %s", str(lerr.output.decode()))
+        M_LOG.error("execWRF abortou on subprocess.run (WRF): %s", str(lerr.output.decode()))
+
+        # obtem e compacta /home/webpca/WRF/WRF/test/em_real/rsl.error.0000
+        # move para file server
+        # gera o link
 
         # create e-mail message
         l_email = email.message.EmailMessage()
 
         # build e-mail message
         l_email["from"] = wdf.DS_EMAIL_FROM
-        l_email["to"] = wdf.DS_EMAIL_FROM
+        l_email["to"] = wdf.DS_EMAIL_WRF
         l_email["subject"] = "CLSim - Erro na Simulação"
 
         # build e-mail body
         l_email.set_content(wdf.DS_EMAIL_BODY_ERR.substitute(xtok=ls_parms,
                                                              xmsg=lerr.output.decode()))
 
-        # enviar mail com aviso de erro para o usuário
-        wem.send_message(wdf.DS_EMAIL_FROM, l_email.as_string())
+        # enviar mail com aviso de erro para o meteorologista
+        wem.send_message(wdf.DS_EMAIL_WRF, l_email.as_string())
+
+        # rename job
+        rename_job(fs_config)
 
     # em caso de erro...
     except Exception as lerr:
         # logger
-        M_LOG.error("execWRF abortou on subprocess.run (2): %s", str(lerr))
+        M_LOG.error("execWRF abortou on subprocess.run (OS): %s", str(lerr))
 
         # create e-mail message
         l_email = email.message.EmailMessage()
 
         # build e-mail message
         l_email["from"] = wdf.DS_EMAIL_FROM
-        l_email["to"] = wdf.DS_EMAIL_ADMIN
+        l_email["to"] = wdf.DS_EMAIL_DEVL
         l_email["subject"] = "CLSim - Erro na Simulação"
 
         # build e-mail body
         l_email.set_content(wdf.DS_EMAIL_BODY_ERR.substitute(xtok=ls_parms,
                                                              xmsg=str(lerr)))
 
-        # enviar mail com aviso de erro para o usuário
-        wem.send_message(wdf.DS_EMAIL_ADMIN, l_email.as_string())
+        # enviar mail com aviso de erro para o desenvolvedor
+        wem.send_message(wdf.DS_EMAIL_DEVL, l_email.as_string())
+
+        # rename job
+        rename_job(fs_config)
+
+# ---------------------------------------------------------------------------------------------
+def rename_job(fs_config: pathlib.Path):
+    """
+    renomeia o arquivo de configuração do job
+    """
+    # logger
+    M_LOG.debug("rename_job >>")
+
+    # data atual (timestamp)
+    li_now = int(time.time())
+
+    # param filename
+    ls_fname = pathlib.PurePath(wdf.DS_DIR_JOBS, f"{li_now}.json")
+
+    # rename job
+    fs_config.rename(ls_fname)
 
 # ---------------------------------------------------------------------------------------------
 def main():
@@ -143,8 +171,8 @@ def main():
     # logger
     M_LOG.info(">> main")
 
-    # logger
-    M_LOG.info(" [*] Waiting for messages. To exit press CTRL+C")
+    # display
+    print(" [*] Waiting for messages. To exit press CTRL+C")
 
     # forever...
     while True:
@@ -155,11 +183,14 @@ def main():
 
         # tem jobs na fila ?
         if llst_files:
-            # logger
-            M_LOG.info(" [x] Received %s", str(llst_files[0]))
+            # job file
+            l_job_file = llst_files[0]
+
+            # display
+            print(" [x] Received ", str(l_job_file))
 
             # process job
-            exec_job(llst_files[0])
+            exec_job(l_job_file)
 
         # senão,...
         else:
@@ -168,7 +199,7 @@ def main():
 
 # ---------------------------------------------------------------------------------------------
 # this is the bootstrap process
-
+#
 if "__main__" == __name__:
     # logger
     logging.basicConfig(datefmt="%Y/%m/%d %H:%M",
