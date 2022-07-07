@@ -21,14 +21,10 @@ dotenv.load_dotenv()
 
 # < servidor FTP >-----------------------------------------------------------------------------
 
-# FTP server IP
-DS_FTP_HOST = os.getenv("DS_FTP_HOST")
-# FTP server port
-DI_FTP_PORT = os.getenv("DI_FTP_PORT")
-# FTP server user
-DS_FTP_USER = os.getenv("DS_FTP_USER")
-# FTP server password
-DS_FTP_PASS = os.getenv("DS_FTP_PASS")
+# File server IP
+DS_FS_HOST = os.getenv("DS_FS_HOST")
+# File server port
+DI_FS_PORT = os.getenv("DI_FS_PORT")
 
 # < servidor SMTP >----------------------------------------------------------------------------
 
@@ -37,43 +33,42 @@ DS_SMTP_SERVER = os.getenv("DS_SMTP_SERVER")
 # SMTP normal port
 DI_SMTP_PORT = os.getenv("DI_SMTP_PORT")
 # SMTP SSL port
-DI_SMTP_SSL_PORT = os.getenv("DI_SMTP_SSL_PORT")
+# DI_SMTP_SSL_PORT = os.getenv("DI_SMTP_SSL_PORT")
 
-# SMTP app password
-DS_SMTP_APP_PWD = os.getenv("DS_SMTP_APP_PWD")
+# SMTP password
+DS_SMTP_PWD = os.getenv("DS_SMTP_PWD")
 # SMTP user
 DS_SMTP_USR = os.getenv("DS_SMTP_USR")
 
 # email from
 DS_EMAIL_FROM = os.getenv("DS_EMAIL_FROM")
-# email admin
-DS_EMAIL_ADMIN = os.getenv("DS_EMAIL_ADMIN")
+# email developer
+DS_EMAIL_DEVL = os.getenv("DS_EMAIL_DEVL")
+# email meteoro
+DS_EMAIL_MET = os.getenv("DS_EMAIL_WRF")
 
 # < defines >----------------------------------------------------------------------------------
 
 # email message template
 DS_EMAIL_BODY_OK = string.Template("""
-Segue o link com o resultado da simulação:
+Segue o link com o resultado da simulação: ($xtok)
 
 $xlink.
 
 Este arquivo estará disponível por 7 dias a contar da data de envio deste e-mail.
 
-Obs: O Chrome removeu o suporte a FTP recentemente.  Você poderá reativá-lo
-se tiver a versão 88 ou anterior.  Espera-se a versão 89 remova todo o
-código FTP.  Você poderá usar o Firefox, wget ou um aplicativo, como WSFTP
-ou similar.
 """)
 
 # email error message template
 DS_EMAIL_BODY_ERR = string.Template("""
-Ocorreu o seguite erro na simulação ($xtok):
+Ocorreu o seguite erro na simulação: ($xtok)
 
 $xmsg.
+
 """)
 
 # FTP download URL
-DS_FTP_URL = f"http://{DS_FTP_HOST}:{DI_FTP_PORT}/shared/clsim/"
+DS_FTP_URL = f"http://{DS_FS_HOST}:{DI_FS_PORT}/shared/clsim/"
 
 # source path
 DS_SRC_PATH = pathlib.Path(__file__).resolve().parent.parent
