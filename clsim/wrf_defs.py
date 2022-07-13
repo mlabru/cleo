@@ -22,30 +22,30 @@ dotenv.load_dotenv()
 # < servidor FTP >-----------------------------------------------------------------------------
 
 # File server IP
-DS_FS_HOST = os.getenv("DS_FS_HOST")
+DS_FS_HOST = os.getenv("DS_FS_HOST", "")
 # File server port
-DI_FS_PORT = os.getenv("DI_FS_PORT")
+DI_FS_PORT = int(os.getenv("DI_FS_PORT", "55555"))
 
 # < servidor SMTP >----------------------------------------------------------------------------
 
 # SMTP host address
-DS_SMTP_SERVER = os.getenv("DS_SMTP_SERVER")
+DS_SMTP_SERVER = os.getenv("DS_SMTP_SERVER", "")
 # SMTP normal port
-DI_SMTP_PORT = os.getenv("DI_SMTP_PORT")
+DI_SMTP_PORT = int(os.getenv("DI_SMTP_PORT", "587"))
 # SMTP SSL port
-# DI_SMTP_SSL_PORT = os.getenv("DI_SMTP_SSL_PORT")
+# DI_SMTP_SSL_PORT = os.getenv("DI_SMTP_SSL_PORT", "465")
 
 # SMTP password
-DS_SMTP_PWD = os.getenv("DS_SMTP_PWD")
+DS_SMTP_PWD = os.getenv("DS_SMTP_PWD", "")
 # SMTP user
-DS_SMTP_USR = os.getenv("DS_SMTP_USR")
+DS_SMTP_USR = os.getenv("DS_SMTP_USR", "")
 
 # email from
-DS_EMAIL_FROM = os.getenv("DS_EMAIL_FROM")
+DS_EMAIL_FROM = os.getenv("DS_EMAIL_FROM", "")
 # email developer
-DS_EMAIL_DEVL = os.getenv("DS_EMAIL_DEVL")
+DS_EMAIL_DEVL = os.getenv("DS_EMAIL_DEVL", "")
 # email meteoro
-DS_EMAIL_MET = os.getenv("DS_EMAIL_WRF")
+DS_EMAIL_WRF = os.getenv("DS_EMAIL_WRF", "")
 
 # < defines >----------------------------------------------------------------------------------
 

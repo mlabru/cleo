@@ -22,9 +22,9 @@ import sys
 import time
 
 # local
-import cls.cls_defs as df
-import cls.wrf_defs as wdf
-import cls.wrk_email as wem
+import clsim.cls_defs as df
+import clsim.wrf_defs as wdf
+import clsim.wrk_email as wem
 
 # < logging >----------------------------------------------------------------------------------
 
@@ -33,11 +33,11 @@ M_LOG = logging.getLogger(__name__)
 M_LOG.setLevel(df.DI_LOG_LEVEL)
 
 # ---------------------------------------------------------------------------------------------
-def exec_job(fs_config: pathlib.Path):
+def exec_job(f_job_cfg: pathlib.Path):
     """
     process messages
 
-    :param fs_config: job config file
+    :param f_job_cfg: job config file
     """
     # logger
     M_LOG.info("exec_job >>")
@@ -46,7 +46,7 @@ def exec_job(fs_config: pathlib.Path):
     ldct_parms = {}
 
     # load JSON config file
-    with open(fs_config, 'r') as fhd:
+    with open(f_job_cfg, 'r', encoding="UTF-8") as fhd:
         # get parameters
         ldct_parms = json.load(fhd)
 
@@ -94,7 +94,7 @@ def exec_job(fs_config: pathlib.Path):
         wem.send_message(ldct_parms["email"].strip(), l_email.as_string())
 
         # remove token da fila
-        pathlib.Path.unlink(pathlib.Path(fs_config))
+        pathlib.Path.unlink(f_job_cfg)
 
     # em caso de erro...
     except subprocess.CalledProcessError as lerr:
@@ -121,7 +121,7 @@ def exec_job(fs_config: pathlib.Path):
         wem.send_message(wdf.DS_EMAIL_WRF, l_email.as_string())
 
         # rename job
-        rename_job(fs_config)
+        rename_job(f_job_cfg)
 
     # em caso de erro...
     except Exception as lerr:
@@ -144,10 +144,10 @@ def exec_job(fs_config: pathlib.Path):
         wem.send_message(wdf.DS_EMAIL_DEVL, l_email.as_string())
 
         # rename job
-        rename_job(fs_config)
+        rename_job(f_job_cfg)
 
 # ---------------------------------------------------------------------------------------------
-def rename_job(fs_config: pathlib.Path):
+def rename_job(f_job_cfg: pathlib.Path):
     """
     renomeia o arquivo de configuração do job
     """
@@ -161,7 +161,7 @@ def rename_job(fs_config: pathlib.Path):
     ls_fname = pathlib.PurePath(wdf.DS_DIR_JOBS, f"{li_now}.json")
 
     # rename job
-    fs_config.rename(ls_fname)
+    f_job_cfg.rename(ls_fname)
 
 # ---------------------------------------------------------------------------------------------
 def main():
@@ -184,7 +184,7 @@ def main():
         # tem jobs na fila ?
         if llst_files:
             # job file
-            l_job_file = llst_files[0]
+            l_job_file = pathlib.Path(llst_files[0])
 
             # display
             print(" [x] Received ", str(l_job_file))

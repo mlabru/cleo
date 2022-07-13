@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "cleo"
+name = "clsim"
 version = "0.3.0"
-description = "Cleo"
+description = "CLSim"
 authors = ["Milton Abrunhosa <miltonmla@decea.mil.br>"]
 license = "MIT"
 

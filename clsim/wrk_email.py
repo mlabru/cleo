@@ -14,8 +14,8 @@ import smtplib
 import ssl
 
 # local
-import cls.cls_defs as df
-import cls.wrf_defs as wdf
+import clsim.cls_defs as df
+import clsim.wrf_defs as wdf
 
 # < logging >----------------------------------------------------------------------------------
 
@@ -62,8 +62,8 @@ def send_message(fs_to: str, fs_message: str):
     # em caso de erro,...
     except Exception as lerr:
         # logger
-        M_LOG.error("error on email service: %s", lerr, exc_info=1)
-        M_LOG.error("ref: %s", str(fs_message), exc_info=1)
+        M_LOG.error("error on email service: %s", lerr, exc_info=True)
+        M_LOG.error("ref: %s", str(fs_message), exc_info=True)
         # cai fora
         return
 
@@ -79,7 +79,7 @@ def send_message(fs_to: str, fs_message: str):
 
     # send message
     l_server.sendmail(wdf.DS_SMTP_USR, [fs_to], fs_message)
-    
+
     M_LOG.debug("send to: %s", str([fs_to]))
     M_LOG.debug("sendmail: %s", str(fs_message))
 
@@ -95,7 +95,7 @@ def send_message(fs_to: str, fs_message: str):
 
 # ---------------------------------------------------------------------------------------------
 # this is the bootstrap process
-        
+
 if "__main__" == __name__:
     # logger
     logging.basicConfig(datefmt="%Y-%m-%d %H:%M",

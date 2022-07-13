@@ -1,6 +1,6 @@
 ###
 # target systems
-TARGET_SYS = ./cls
+TARGET_SYS = ./clsim
 
 ###
 # config
