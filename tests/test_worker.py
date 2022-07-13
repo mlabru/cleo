@@ -1,5 +1,5 @@
 
-from cls import worker as wk
+from clsim import worker as wk
 
 # content of test_sample.py
 def inc(x):
