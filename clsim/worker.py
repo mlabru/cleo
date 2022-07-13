@@ -46,7 +46,7 @@ def exec_job(f_job_cfg: pathlib.Path):
     ldct_parms = {}
 
     # load JSON config file
-    with open(f_job_cfg, 'r') as fhd:
+    with open(f_job_cfg, 'r', encoding="UTF-8") as fhd:
         # get parameters
         ldct_parms = json.load(fhd)
 

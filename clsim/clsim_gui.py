@@ -14,7 +14,6 @@ import datetime
 import json
 import logging
 import pathlib
-import sys
 import time
 
 # streamlit
@@ -110,7 +109,7 @@ def gera_job(fdct_parm: dict):
     ls_fname = pathlib.PurePath(wdf.DS_DIR_JOBS, f"{li_now}.json")
 
     # open param file
-    with open(ls_fname, 'w') as lfh_out:
+    with open(ls_fname, 'w', encoding="UTF-8") as lfh_out:
         # write data directly from dictionary
         json.dump(fdct_parm, lfh_out)
 

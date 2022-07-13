@@ -79,7 +79,7 @@ def gera_job(fdct_parm: dict):
     ls_fname = pathlib.PurePath(wdf.DS_DIR_JOBS, f"{li_now}.json")
 
     # open param file
-    with open(ls_fname, 'w') as lfh_out:
+    with open(ls_fname, 'w', encoding="UTF-8") as lfh_out:
         # write data directly from dictionary
         json.dump(fdct_parm, lfh_out)
 
@@ -122,16 +122,16 @@ if "__main__" == __name__:
 
     # disable logging
     # logging.disable(sys.maxsize)
-    
+
     try:
         # run application
         main()
-                                                         
+
     # em caso de erro...
     except KeyboardInterrupt:
         # logger
         logging.warning("Interrupted.")
-    
+
     # terminate
     sys.exit(0)
 
