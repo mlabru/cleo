@@ -21,8 +21,8 @@ import time
 import streamlit as st
 
 # local
-import cls.cls_defs as df
-import cls.wrf_defs as wdf
+import clsim.cls_defs as df
+import clsim.wrf_defs as wdf
 
 # < logging >----------------------------------------------------------------------------------
 
@@ -144,16 +144,7 @@ if "__main__" == __name__:
     # disable logging
     # logging.disable(sys.maxint)
 
-    try:
-        # run application
-        main()
-    
-    # em caso de erro...
-    except KeyboardInterrupt:
-        # logger
-        logging.warning("Interrupted.")
-            
-    # terminate
-    sys.exit(0)
+    # run application
+    main()
 
 # < the end >----------------------------------------------------------------------------------

@@ -14,8 +14,8 @@ import smtplib
 import ssl
 
 # local
-import cls.cls_defs as df
-import cls.wrf_defs as wdf
+import clsim.cls_defs as df
+import clsim.wrf_defs as wdf
 
 # < logging >----------------------------------------------------------------------------------
 

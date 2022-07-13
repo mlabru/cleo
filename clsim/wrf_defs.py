@@ -45,7 +45,7 @@ DS_EMAIL_FROM = os.getenv("DS_EMAIL_FROM")
 # email developer
 DS_EMAIL_DEVL = os.getenv("DS_EMAIL_DEVL")
 # email meteoro
-DS_EMAIL_MET = os.getenv("DS_EMAIL_WRF")
+DS_EMAIL_WRF = os.getenv("DS_EMAIL_WRF")
 
 # < defines >----------------------------------------------------------------------------------
 

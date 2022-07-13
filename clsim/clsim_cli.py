@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-st_cli
+cls_cli
 
 2022.nov  mlabru  initial version (Linux/Python)
 """
@@ -15,8 +15,8 @@ import sys
 import time
 
 # local
-import cls.cls_defs as df
-import cls.wrf_defs as wdf
+import clsim.cls_defs as df
+import clsim.wrf_defs as wdf
 
 # < logging >----------------------------------------------------------------------------------
 
