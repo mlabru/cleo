@@ -53,7 +53,7 @@ DS_EMAIL_WRF = os.getenv("DS_EMAIL_WRF", "")
 DS_EMAIL_BODY_OK = string.Template("""
 Segue o link com o resultado da simulação: ($xtok)
 
-$xlink.
+$xlink
 
 Este arquivo estará disponível por 7 dias a contar da data de envio deste e-mail.
 
@@ -64,6 +64,10 @@ DS_EMAIL_BODY_ERR = string.Template("""
 Ocorreu o seguite erro na simulação: ($xtok)
 
 $xmsg.
+
+Link para o arquivo de log:
+
+#xlink
 
 """)
 
