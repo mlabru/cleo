@@ -142,7 +142,8 @@ def exec_job(f_job_cfg: pathlib.Path):
 
         # build e-mail body
         l_email.set_content(wdf.DS_EMAIL_BODY_ERR.substitute(xtok=ls_parms,
-                                                             xmsg=str(lerr)))
+                                                             xmsg=str(lerr),
+                                                             xlink=ls_link))
 
         # enviar mail com aviso de erro para o desenvolvedor
         wem.send_message(wdf.DS_EMAIL_DEVL, l_email.as_string())

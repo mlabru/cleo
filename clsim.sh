@@ -36,7 +36,7 @@ export PYTHONPATH="$PWD/."
 # log warning
 echo "[`date`]: starting process worker..."
 # executa o worker (message queue consumer)
-python3 clsim/worker.py > logs/worker.$HOST.$TDATE.log 2>&1 &
+python3 clsim/worker.py > logs/worker.$HOST.$TDATE.out 2>&1 &
 
 # ckeck if another instance os clsim is running
 DI_PID_CLS=`ps ax | grep -w streamlit | grep -w clsim_gui.py | awk '{ print $1 }'`
@@ -53,6 +53,6 @@ fi
 # log warning
 echo "[`date`]: starting process clsim..."
 # executa a aplicação (-OO)
-streamlit run clsim/clsim_gui.py > logs/clsim_gui.$HOST.$TDATE.log 2>&1 &
+streamlit run clsim/clsim_gui.py --server.port 8501 > logs/clsim_gui.$HOST.$TDATE.out 2>&1 &
 
 # < the end >----------------------------------------------------------------------------------

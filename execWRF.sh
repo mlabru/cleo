@@ -39,4 +39,4 @@ export PYTHONPATH="$PWD/."
 # log warning
 echo "[`date`]: starting process execWRF..."
 # executa a aplicação (-OO)
-python3 execWRF/exec_wrf.py $@ > logs/execWRF.$HOST.$TDATE.$TOKEN.log 2>&1
+python3 execWRF/exec_wrf.py $@ > logs/execWRF.$HOST.$TDATE.$TOKEN.out 2>&1

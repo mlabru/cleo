@@ -2,6 +2,7 @@
 """
 st_cls
 
+2023.abr  franciscanafrcm atualizacao interface
 2022.jun  mlabru  remove rabbitmq cause of timeout problems, remove graylog
 2022.may  mlabru  rabbitmq connection timeout
 2022.apr  mlabru  graylog log management
@@ -41,7 +42,7 @@ def pag_openwrf():
     st.image("wrfmodel.jpg")
 
     # título da página
-    st.title("openWRF")
+    st.title("Modelo WRF ")
 
     # seleção da região
     ls_reg = st.selectbox("Região:", wdf.DLST_REGIAO_NOME)
@@ -121,13 +122,24 @@ def main():
     # logger
     M_LOG.info("main >>")
 
+    #app logotipo
+    st.sidebar.image("logoicea.jpg")
+
     # app title
-    st.sidebar.title("Centro Logístico de Simulação Meteorológica")
+    st.sidebar.title("Centro Logístico de Simulação Meteorológica (CLSim)\n")
+
     # app selection
-    ls_pg_sel = st.sidebar.selectbox("Selecione o aplicativo", ["openWRF"])
+    ls_pg_sel = st.sidebar.selectbox("Selecione o modelo:", ["modelo WRF"])
+
+    # app descricao projeto
+    st.sidebar.markdown("O Projeto CLSim, desenvolvido pela Seção de Meteorologia Aeronáutica da Divisão de Pesquisa do ICEA, disponibiliza a saída do modelo WRF (nos formatos .dat e .ctl) conforme grades e parâmetros pré-definidos.")
+
+    # app email contato
+    st.sidebar.markdown("Qualquer dúvida entre em contato por e-mail: **estudosclimatologicos.icea@fab.mil.br**")
+
 
     # openWRF ?
-    if "openWRF" == ls_pg_sel:
+    if "modelo WRF" == ls_pg_sel:
         # call WRF page
         pag_openwrf()
 

@@ -84,7 +84,7 @@ DS_BASH_WRF = pathlib.PurePath(DS_SRC_PATH, "execWRF.sh")
 DS_DIR_JOBS = pathlib.PurePath(DS_SRC_PATH, "jobs")
 
 # lista de regiões
-DLST_REGIAO_NOME = ["Norte", "Sudeste", "Brasília - mp6", "Brasília - mp10"]
+DLST_REGIAO_NOME = ["Norte", "Sudeste", "Microfísica 6", "Microfísica 10"]
 
 # lista de siglas de regiões
 DLST_REGIAO_SIGLA = ["N", "SE", "BR6", "BR10"]
